@@ -69,6 +69,71 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	}
 
 
+	//----BEGIN CALCULATION-----
+	
+
+	int number_of_rows = k + 1;
+	int number_of_columns = k + n + 2;
+	int index_quotient_column = number_of_columns - 1;
+
+	cout << "number_of_rows: " << number_of_rows << endl;
+	cout << "number_of_columns: " << number_of_columns << endl;
+
+	//find the highest number (without "-") in the last row OR find pivotcolumn
+
+	int pivot_column_index = 0;
+	double temp_highest = 0;
+
+	for (int i = 0; i < index_quotient_column; i++) {
+		if (i == 0){
+			temp_highest = table[number_of_rows - 1][i];
+			pivot_column_index = i;
+		}
+		else 
+			if (table[number_of_rows - 1][i] < 0 && table[number_of_rows - 1][i] < temp_highest){
+				temp_highest = table[number_of_rows - 1][i];
+				pivot_column_index = i;
+			}
+	}
+
+	cout << "The highest number (without \" - \") is :" << temp_highest << " at index " << pivot_column_index << endl;
+
+	//calculate Quotient
+	
+		for (int i = 0; i < number_of_rows - 1; i++) {
+			if (table[i][pivot_column_index] != 0){
+				table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][pivot_column_index];
+			}
+		}
+		cout << "Quotient: " << endl;
+
+		for (int i = 0; i < number_of_rows - 1; i++) {
+
+			cout << table[i][index_quotient_column] << " ";
+			
+		}
+		cout << endl;
+
+
+
+		//find the smallest number in the Quotient column OR find pivot row
+
+		int index_pivot_row = 0;
+		double temp_smallest = 0;
+
+		for (int i = 0; i < number_of_rows; i++) {
+			if (i == 0 && table[i][index_quotient_column] != 0){
+				temp_smallest = table[i][index_quotient_column];
+				index_pivot_row = i;
+			}
+			else
+				if (table[i][index_quotient_column] != 0 && table[i][index_quotient_column] < temp_smallest){
+					temp_smallest = table[i][index_quotient_column];
+					index_pivot_row = i;
+				}
+		}
+
+		cout << "The smallest quotient number is :" << temp_smallest << " at index " << index_pivot_row << endl;
 
 
 
