@@ -11,6 +11,16 @@
 using namespace std;
 
 
+
+bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows){
+	for (int i = 0; i < number_of_columns - 2; i++) {
+		if (table[number_of_rows-1][i] > 0)
+			return true;
+	}
+	return false;
+}
+
+
 double* lpsolve(int n, double *c, int k, double **A, double *b){
 	//Schlupfvariablen, befuellen mit '1'
 	int *s_vars = new int[k];
@@ -35,11 +45,11 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 				table[i][j] = 1;
 				schlupf_vars_counter_i++;
 				schlupf_vars_counter_j++;
-			}	
+			}
 			else
 				table[i][j] = 0;
 		}
-		
+
 		table[i][n + k] = b[i];
 	}
 
@@ -47,10 +57,10 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 
 	//multiplying Zielfukntionargumente with -1
 	for (int i = 0; i < n; i++){
-		table[k][i] = c[i] * -1;
+		table[k][i] = c[i];
 	}
 	//fillng up Schluepfvariablen for last row with zeros
-	for (int i = n; i < n+k+1; i++){
+	for (int i = n; i < n + k + 1; i++){
 		table[k][i] = 0;
 	}
 
@@ -70,7 +80,7 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 
 
 	//----BEGIN CALCULATION-----
-	
+
 
 	int number_of_rows = k + 1;
 	int number_of_columns = k + n + 2;
@@ -80,7 +90,7 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	cout << "number_of_columns: " << number_of_columns << endl;
 
 	//find the highest number (without "-") in the last row OR find pivotcolumn
-
+do{
 	int index_pivot_column = 0;
 	double temp_highest = 0;
 
@@ -89,8 +99,8 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 			temp_highest = table[number_of_rows - 1][i];
 			index_pivot_column = i;
 		}
-		else 
-			if (table[number_of_rows - 1][i] < 0 && table[number_of_rows - 1][i] < temp_highest){
+		else
+			if (table[number_of_rows - 1][i] > 0 && temp_highest < table[number_of_rows - 1][i]){
 				temp_highest = table[number_of_rows - 1][i];
 				index_pivot_column = i;
 			}
@@ -99,63 +109,89 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	cout << "The highest number (without \" - \") is :" << temp_highest << " at index " << index_pivot_column << endl;
 
 	//calculate Quotient
-	
-		for (int i = 0; i < number_of_rows - 1; i++) {
-			if (table[i][index_pivot_column] != 0){
-				table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][index_pivot_column];
-			}
+
+	for (int i = 0; i < number_of_rows - 1; i++) {
+		if (table[i][index_pivot_column] != 0){
+			table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][index_pivot_column];
 		}
-		cout << "Quotient: " << endl;
+	}
+	cout << "Quotient: " << endl;
 
-		for (int i = 0; i < number_of_rows - 1; i++) {
+	for (int i = 0; i < number_of_rows - 1; i++) {
 
-			cout << table[i][index_quotient_column] << " ";
-			
+		cout << table[i][index_quotient_column] << " ";
+
+	}
+	cout << endl;
+
+
+
+	//find the smallest number in the Quotient column OR find pivot row
+
+	int index_pivot_row = 0;
+	double temp_smallest = 0;
+
+	for (int i = 0; i < number_of_rows; i++) {
+		if (i == 0 && table[i][index_quotient_column] > 0){
+			temp_smallest = table[i][index_quotient_column];
+			index_pivot_row = i;
 		}
-		cout << endl;
-
-
-
-		//find the smallest number in the Quotient column OR find pivot row
-
-		int index_pivot_row = 0;
-		double temp_smallest = 0;
-
-		for (int i = 0; i < number_of_rows; i++) {
-			if (i == 0 && table[i][index_quotient_column] != 0){
+		else
+			if (table[i][index_quotient_column] > 0 && table[i][index_quotient_column] < temp_smallest){
 				temp_smallest = table[i][index_quotient_column];
 				index_pivot_row = i;
 			}
-			else
-				if (table[i][index_quotient_column] != 0 && table[i][index_quotient_column] < temp_smallest){
-					temp_smallest = table[i][index_quotient_column];
-					index_pivot_row = i;
-				}
+	}
+
+	cout << "The smallest quotient number is " << temp_smallest << " at index " << index_pivot_row << endl;
+
+	//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
+
+	cout << "Deviding each element in the row " << index_pivot_row << " by " << table[index_pivot_row][index_pivot_column] << endl;
+
+	double temp_dev = table[index_pivot_row][index_pivot_column];
+
+	for (int i = 0; i < number_of_columns - 1; i++) {
+		if (table[index_pivot_row][index_pivot_column] == 0){
+			//!!!!!!!!!!!!!!!!TO THINK ABOUT!!!!!!!!!!!!!!!!
+			break;
 		}
+		table[index_pivot_row][i] /= temp_dev;
+	}
 
-		cout << "The smallest quotient number is " << temp_smallest << " at index " << index_pivot_row << endl;
+	cout << "Results after devision: " << endl;
 
-		//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
+	for (int i = 0; i < number_of_columns - 1; i++) {
+		cout << table[index_pivot_row][i] << " ";
+	}
 
-		cout << "Deviding each element in the row " << index_pivot_row << " by " << table[index_pivot_row][index_pivot_column] << endl;
+	cout << endl;
 
-		double temp_dev = table[index_pivot_row][index_pivot_column];
+	cout << "Brinding all values in the pivot column to 0 (except of the pivot element itself of course)" << endl;
 
-		for (int i = 0; i < number_of_columns - 1; i++) {
-			if (table[index_pivot_row][index_pivot_column] == 0){
-				//!!!!!!!!!!!!!!!!TO THINK ABOUT!!!!!!!!!!!!!!!!
-				break;
+	for (int i = 0; i < number_of_rows; i++) {
+		if (i != index_pivot_row && table[i][index_pivot_column] != 0){
+			double temp_multiplyer = table[i][index_pivot_column];
+			for (int j = 0; j < number_of_columns - 1; j++) {
+				table[i][j] = table[i][j] - (table[index_pivot_row][j] * temp_multiplyer);
 			}
-			table[index_pivot_row][i] /= temp_dev;
 		}
 
-		cout << "Results after devision: " << endl;
-		
-		for (int i = 0; i < number_of_columns - 1; i++) {
-			cout << table[index_pivot_row][i] << " ";
-		}
+	}
 
+
+	//testing tabelle
+	cout << "Outputting the whole table after the iteration" << endl;
+	for (int i = 0; i < k + 1; i++) {
+		for (int j = 0; j < k + n + 2; j++) {
+			cout << table[i][j] << " ";
+		}
 		cout << endl;
+	}
+
+	cout << "hasPositiveValues(table, number_of_columns, number_of_rows) returned: " << hasPositiveValues(table, number_of_columns, number_of_rows) << endl;
+
+}while (hasPositiveValues(table, number_of_columns, number_of_rows));
 
 
 	return nullptr;
