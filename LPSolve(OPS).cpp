@@ -81,28 +81,28 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 
 	//find the highest number (without "-") in the last row OR find pivotcolumn
 
-	int pivot_column_index = 0;
+	int index_pivot_column = 0;
 	double temp_highest = 0;
 
 	for (int i = 0; i < index_quotient_column; i++) {
 		if (i == 0){
 			temp_highest = table[number_of_rows - 1][i];
-			pivot_column_index = i;
+			index_pivot_column = i;
 		}
 		else 
 			if (table[number_of_rows - 1][i] < 0 && table[number_of_rows - 1][i] < temp_highest){
 				temp_highest = table[number_of_rows - 1][i];
-				pivot_column_index = i;
+				index_pivot_column = i;
 			}
 	}
 
-	cout << "The highest number (without \" - \") is :" << temp_highest << " at index " << pivot_column_index << endl;
+	cout << "The highest number (without \" - \") is :" << temp_highest << " at index " << index_pivot_column << endl;
 
 	//calculate Quotient
 	
 		for (int i = 0; i < number_of_rows - 1; i++) {
-			if (table[i][pivot_column_index] != 0){
-				table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][pivot_column_index];
+			if (table[i][index_pivot_column] != 0){
+				table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][index_pivot_column];
 			}
 		}
 		cout << "Quotient: " << endl;
@@ -133,9 +133,29 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 				}
 		}
 
-		cout << "The smallest quotient number is :" << temp_smallest << " at index " << index_pivot_row << endl;
+		cout << "The smallest quotient number is " << temp_smallest << " at index " << index_pivot_row << endl;
 
+		//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
 
+		cout << "Deviding each element in the row " << index_pivot_row << " by " << table[index_pivot_row][index_pivot_column] << endl;
+
+		double temp_dev = table[index_pivot_row][index_pivot_column];
+
+		for (int i = 0; i < number_of_columns - 1; i++) {
+			if (table[index_pivot_row][index_pivot_column] == 0){
+				//!!!!!!!!!!!!!!!!TO THINK ABOUT!!!!!!!!!!!!!!!!
+				break;
+			}
+			table[index_pivot_row][i] /= temp_dev;
+		}
+
+		cout << "Results after devision: " << endl;
+		
+		for (int i = 0; i < number_of_columns - 1; i++) {
+			cout << table[index_pivot_row][i] << " ";
+		}
+
+		cout << endl;
 
 
 	return nullptr;
