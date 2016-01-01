@@ -54,11 +54,12 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	}
 
 	table[k] = new double[k + n + 1];//Letzte Zeile
-
-	//multiplying Zielfukntionargumente with -1
+	
+	//multiplying Zielfukntionargumente with -1 (was, now just copying)
 	for (int i = 0; i < n; i++){
 		table[k][i] = c[i];
 	}
+	
 	//fillng up Schluepfvariablen for last row with zeros
 	for (int i = n; i < n + k + 1; i++){
 		table[k][i] = 0;
@@ -114,6 +115,8 @@ do{
 		if (table[i][index_pivot_column] != 0){
 			table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][index_pivot_column];
 		}
+		else
+			table[i][index_quotient_column] = -1;
 	}
 	cout << "Quotient: " << endl;
 
@@ -129,12 +132,14 @@ do{
 	//find the smallest number in the Quotient column OR find pivot row
 
 	int index_pivot_row = 0;
-	double temp_smallest = 0;
+	double temp_smallest = 0; //what if it can't be set at all???
+	bool first_set = false;
 
 	for (int i = 0; i < number_of_rows; i++) {
-		if (i == 0 && table[i][index_quotient_column] > 0){
+		if (first_set == false && table[i][index_quotient_column] > 0){
 			temp_smallest = table[i][index_quotient_column];
 			index_pivot_row = i;
+			first_set = true;
 		}
 		else
 			if (table[i][index_quotient_column] > 0 && table[i][index_quotient_column] < temp_smallest){
@@ -181,7 +186,7 @@ do{
 
 
 	//testing tabelle
-	cout << "Outputting the whole table after the iteration" << endl;
+	cout << "Outputting the whole table after an iteration" << endl;
 	for (int i = 0; i < k + 1; i++) {
 		for (int j = 0; j < k + n + 2; j++) {
 			cout << table[i][j] << " ";
@@ -194,7 +199,32 @@ do{
 }while (hasPositiveValues(table, number_of_columns, number_of_rows));
 
 
-	return nullptr;
+	double* results = new double[n];
+	for (int i = 0; i < n; i++){
+		results[i] = 0;
+	}
+	int results_counter = 0;
+
+	for (int i = 0; i < n; i++) {
+		int row_index_where_ONE_was_found = -1;
+		bool not_only_zeros_and_ONE = false;
+		for (int j = 0; j < number_of_rows; j++) {
+			if (table[j][i] == 1){
+				row_index_where_ONE_was_found = j;
+			}
+			else if (table[j][i] != 0){
+				not_only_zeros_and_ONE = true;
+			}
+		}
+		if (not_only_zeros_and_ONE != true && row_index_where_ONE_was_found >= 0){
+			results[results_counter++] = table[row_index_where_ONE_was_found][number_of_columns - 2];
+		}
+		else
+			results_counter++;
+	}
+
+
+	return results;
 }
 
 
@@ -244,11 +274,13 @@ int _tmain(int argc, _TCHAR* argv[]){
 
 
 	//results
-	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
-	for (int i = 0; i < n; i++) {
-//		cout << vector_b[i] << endl;
-	}
 
+	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
+	cout << endl << "Final results: " << endl;
+	for (int i = 0; i < n; i++) {
+		cout << "x" << i+1 << " = " << results[i] << ", ";
+	}
+	cout << endl << endl;
 
 	system("pause");
 
