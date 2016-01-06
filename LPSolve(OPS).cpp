@@ -4,10 +4,11 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+
 #include "Funktion.h"
+#include "Eigen/Dense"
 
-
-
+using Eigen::MatrixXd;
 using namespace std;
 
 
@@ -20,6 +21,96 @@ bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows
 	return false;
 }
 
+double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, double *vector_c){
+	//n = iterator_matrix
+	//basis = basis_matrix
+	//k = iterator_vektor
+
+	int* bv = new int[];
+	int* nbv = new int[];
+	double* c = new double[];
+	double** a = new double*[k];
+	for (int i = 0; i < n+1; i++){
+		a[i] = new double[n+k+1];
+	}
+	MatrixXd B(k,k);
+	MatrixXd Bi(k,k);
+	MatrixXd NB(k,n);
+
+	cout << endl <<  "Basic & Non-Basic Variables als Positionen: " << endl;
+	for (int h=0,i=0,j = 0; i < n+k; i++){
+		if (optimal_matrix[n+1][i] == 0){
+			bv[h] = i;
+			cout << "bv " << h << " = " << bv[h] << endl;
+			h++;
+		}else{
+			nbv[j] = i;
+			cout << "nbv" << j << " = " << nbv[j] << endl;
+			j++;
+		}
+	}
+
+	cout << endl <<  "a[i]s: " << endl;
+	for (int i = 0; i < n+k; i++){
+		cout << "a" << i << " = ";
+		for (int j = 0; j < k; j++){
+			a[j][i] = basis_matrix[j][i];
+			cout << a[j][i] << " ";
+		}
+		cout << endl;
+	}
+
+	
+	cout << endl << "B: " << endl;
+	for (int i = 0; i < k; i++){
+		for (int j = 0; j < k; j++){
+			B(j,i) = a[j][bv[i]];
+		}
+	}
+	cout << B << endl;
+
+	Bi = B.inverse();
+
+	cout << endl << "B-1: " << endl;
+	cout  << endl << Bi << endl;
+
+	//cout << endl << "B*B-1: " << endl;
+	//cout << B * Bi << endl;
+	
+	cout << endl << "NBV: " << endl;
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < k; j++){
+			NB(j,i) = a[j][nbv[i]];
+		}
+	}
+
+	cout << NB << endl;	
+
+	cout << endl << "CB: " << endl;
+	for (int i = 0; i < k; i ++){
+		if (bv[i] >= n){
+			c[i]= 0;
+		}else{
+			c[i]= vector_c[bv[i]];
+		}
+		cout << c[i] << " ";
+	}
+	cout << endl;
+
+	cout << endl << "NCBV: " << endl;
+	for (int i = 0; i < n; i ++){
+		if (nbv[i] >= n){
+			c[i]= 0;
+		}else{
+			c[i]= vector_c[nbv[i]];
+		}
+		cout << c[i] << " ";
+	}
+	cout << endl;
+
+	return c;
+}
+
 
 double* lpsolve(int n, double *c, int k, double **A, double *b){
 	//Schlupfvariablen, befuellen mit '1'
@@ -30,6 +121,10 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 
 	//create table and fill up with the 
 	double** table = new double*[k + 1];//Spalten
+	double** basis_table = new double*[k + 1];//Spalten
+	for (int i = 0; i < k+1; i++){
+		basis_table[i] = new double[k + n + 2];//Zeilen
+	}
 
 	int schlupf_vars_counter_i = 0;//fuer Schluepfvariable
 	int schlupf_vars_counter_j = n;//fuer Schluepfvariable
@@ -74,6 +169,7 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	cout << "testing table" << endl;
 	for (int i = 0; i < k + 1; i++) {
 		for (int j = 0; j < k + n + 2; j++) {
+			basis_table[i][j] = table[i][j];
 			cout << table[i][j] << " ";
 		}
 		cout << endl;
@@ -185,6 +281,7 @@ do{
 	}
 
 
+
 	//testing tabelle
 	cout << "Outputting the whole table after an iteration" << endl;
 	for (int i = 0; i < k + 1; i++) {
@@ -223,6 +320,9 @@ do{
 			results_counter++;
 	}
 
+	//sensitivity
+
+	double* sensitivity_rs = sensAnalysis(n, k, basis_table, table, c);
 
 	return results;
 }
@@ -255,8 +355,8 @@ int _tmain(int argc, _TCHAR* argv[]){
 			file >> matrix[i][j];	
 		}
 		file >> vector_b[vector_b_counter++];
-		
 	}
+
 	//testing matrix
 	cout << "matrix" << endl;
 	for (int i = 0; i < k; i++) {
@@ -266,7 +366,7 @@ int _tmain(int argc, _TCHAR* argv[]){
 	}
 
 
-	//testing vector_c
+	//testing vector_b
 	cout << "vector_b" << endl;
 	for (int i = 0; i < k; i++) {
 		cout << vector_b[i] << endl;
@@ -276,11 +376,13 @@ int _tmain(int argc, _TCHAR* argv[]){
 	//results
 
 	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
+
 	cout << endl << "Final results: " << endl;
 	for (int i = 0; i < n; i++) {
 		cout << "x" << i+1 << " = " << results[i] << ", ";
 	}
 	cout << endl << endl;
+
 
 	system("pause");
 

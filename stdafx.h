@@ -6,6 +6,7 @@
 #pragma once
 
 #include "targetver.h"
+#include "Eigen\Dense"
 
 #include <stdio.h>
 #include <tchar.h>
