@@ -33,6 +33,8 @@ double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix
 	for (int i = 0; i < n+1; i++){
 		a[i] = new double[n+k+1];
 	}
+	MatrixXd cb(k,1);
+	MatrixXd ncbv(n,1);
 	MatrixXd B(k,k);
 	MatrixXd Bi(k,k);
 	MatrixXd NB(k,n);
@@ -70,12 +72,6 @@ double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix
 	cout << B << endl;
 
 	Bi = B.inverse();
-
-	cout << endl << "B-1: " << endl;
-	cout  << endl << Bi << endl;
-
-	//cout << endl << "B*B-1: " << endl;
-	//cout << B * Bi << endl;
 	
 	cout << endl << "NBV: " << endl;
 	for (int i = 0; i < n; i++){
@@ -89,24 +85,43 @@ double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix
 	cout << endl << "CB: " << endl;
 	for (int i = 0; i < k; i ++){
 		if (bv[i] >= n){
-			c[i]= 0;
+			cb(i,0) = 0.0;
 		}else{
-			c[i]= vector_c[bv[i]];
+			cb(i,0) = vector_c[bv[i]];
 		}
-		cout << c[i] << " ";
 	}
-	cout << endl;
+	cout << cb << endl;
 
 	cout << endl << "NCBV: " << endl;
 	for (int i = 0; i < n; i ++){
 		if (nbv[i] >= n){
-			c[i]= 0;
+			ncbv(i,0)= 0.0;
 		}else{
-			c[i]= vector_c[nbv[i]];
+			ncbv(i,0) = vector_c[nbv[i]];
 		}
-		cout << c[i] << " ";
 	}
-	cout << endl;
+
+	cout << ncbv << endl;
+
+	//Changing the Object function coefficiant of a non basic variable
+	double ncbv_dot_Biaj = 0.0;
+	for (int i = 0; i < n; i ++){
+		double temp0 = 0.0;
+		double temp1 = 0.0;
+		double delta = 0.0;
+		for (int j = 0; j < n; j++){
+			temp0 = ncbv(j,0);
+			temp1 = a[i][nbv[j]];
+			ncbv_dot_Biaj += temp0*temp1;
+		}
+		while (ncbv_dot_Biaj - cb(i,0) - delta >= 0){
+			delta += .1;
+		};
+		
+		cout << endl <<  "Der Koeffizient von NBV" << i << " kann um " << delta << " verschoben werden." << endl;
+		
+	}
+
 
 	return c;
 }
