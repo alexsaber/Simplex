@@ -39,7 +39,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	MatrixXd Bi(k,k);
 	MatrixXd NB(k,n);
 
-	cout << endl <<  "Basic & Non-Basic Variables als Positionen: " << endl;
+	cout <<  "Basic & Non-Basic Variables als Positionen: " << endl;
 	for (int h=0,i=0,j = 0; i < n+k; i++){
 		if (optimal_matrix[n+1][i] == 0){
 			bv[h] = i;
@@ -52,7 +52,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 		}
 	}
 
-	cout << endl <<  "a[i]s: " << endl;
+	cout << "a[i]s: " << endl;
 	for (int i = 0; i < n+k; i++){
 		cout << "a" << i << " = ";
 		for (int j = 0; j < k; j++){
@@ -63,7 +63,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	}
 
 	
-	cout << endl << "B: " << endl;
+	cout << "B: " << endl;
 	for (int i = 0; i < k; i++){
 		for (int j = 0; j < k; j++){
 			B(j,i) = a[j][bv[i]];
@@ -73,7 +73,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	Bi = B.inverse();
 	
-	cout << endl << "NBV: " << endl;
+	cout << "NBV: " << endl;
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < k; j++){
 			NB(j,i) = a[j][nbv[i]];
@@ -82,7 +82,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	cout << NB << endl;	
 
-	cout << endl << "CB: " << endl;
+	cout << "CB: " << endl;
 	for (int i = 0; i < k; i ++){
 		if (bv[i] >= n){
 			cb(i,0) = 0.0;
@@ -92,7 +92,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	}
 	cout << cb << endl;
 
-	cout << endl << "NCBV: " << endl;
+	cout << "NCBV: " << endl;
 	for (int i = 0; i < n; i ++){
 		if (nbv[i] >= n){
 			ncbv(i,0)= 0.0;
@@ -119,7 +119,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			delta += .1;
 		};
 		
-		cout << endl <<  "The Coefficiants of NBV" << i << " is in the range of " << delta << "." << endl;
+		cout << "The Coefficiants of NBV" << i << " is in the range of " << delta << "." << endl;
 		
 	}
 
@@ -135,10 +135,31 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			ncbv_dot_Biaj += temp0*temp1;
 		}
 	}
-	if (ncbv_dot_Biaj - 20 > 0)
-		cout << endl << "Adding a new activity 20 with Recources 1 is NOT reasonable." << endl ;
-	else
-		cout << endl  << "Adding a new activity 20 with Recources 1 is REASONABLE." << endl ;
+	if (ncbv_dot_Biaj - 20 > 0){
+		cout << "Adding a new activity 20 with Recources [";	
+		for (int i = 0; i<k;i++){
+			cout << " 1 ";
+		}
+		cout << "] is NOT Reasonable." << endl ;
+	}
+	else{
+		cout << "Adding a new activity 20 with Recources [";
+		for (int i = 0; i<k;i++){
+			cout << " 1 ";
+		}
+		cout << "] is REASONABLE." << endl ;
+	}
+
+	//Testen welche Aktivität sinnvoll wäre
+	double delta = 1.0;
+	while (ncbv_dot_Biaj - delta > 0 && delta != 0.0){
+		delta += .01;
+	}
+	cout << "Adding a new activity " << delta << " with Recources [";
+	for (int i = 0; i<k;i++){
+		cout << " 1 ";
+	}
+	cout << "] is REASONABLE." << endl ;
 }
 
 
