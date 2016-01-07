@@ -21,7 +21,7 @@ bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows
 	return false;
 }
 
-double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, double *vector_c){
+void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, double *vector_c){
 	//n = iterator_matrix
 	//basis = basis_matrix
 	//k = iterator_vektor
@@ -105,6 +105,7 @@ double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix
 
 	//Changing the Object function coefficiant of a non basic variable
 	double ncbv_dot_Biaj = 0.0;
+
 	for (int i = 0; i < n; i ++){
 		double temp0 = 0.0;
 		double temp1 = 0.0;
@@ -118,12 +119,26 @@ double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix
 			delta += .1;
 		};
 		
-		cout << endl <<  "Der Koeffizient von NBV" << i << " kann um " << delta << " verschoben werden." << endl;
+		cout << endl <<  "The Coefficiants of NBV" << i << " is in the range of " << delta << "." << endl;
 		
 	}
 
-
-	return c;
+	//Adding a new variable or activity (20,[1,1,1,1])
+	ncbv_dot_Biaj = 0.0;
+	for (int i = 0; i < n; i ++){
+		double temp0 = 0.0;
+		double temp1 = 0.0;
+		double delta = 0.0;
+		for (int j = 0; j < n; j++){
+			temp0 = ncbv(j,0);
+			temp1 = 1;
+			ncbv_dot_Biaj += temp0*temp1;
+		}
+	}
+	if (ncbv_dot_Biaj - 20 > 0)
+		cout << endl << "Adding a new activity 20 with Recources 1 is NOT reasonable." << endl ;
+	else
+		cout << endl  << "Adding a new activity 20 with Recources 1 is REASONABLE." << endl ;
 }
 
 
@@ -336,8 +351,7 @@ do{
 	}
 
 	//sensitivity
-
-	double* sensitivity_rs = sensAnalysis(n, k, basis_table, table, c);
+	sensAnalysis(n, k, basis_table, table, c);
 
 	return results;
 }
