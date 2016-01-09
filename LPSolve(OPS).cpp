@@ -68,11 +68,12 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	
 	cout << "B: " << endl;
-	for (int i = 0; i < bv_count; i++){
-		for (int j = 0; j < k; j++){
+	for (int i = 0; i < k; i++){
+		for (int j = 0; j < bv_count; j++){
 			B(j,i) = a[j][bv[i]];
 		}
 	}
+
 	cout << B << endl;
 
 	Bi = B.inverse();
@@ -109,15 +110,32 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	//Changing the Object function coefficiant of a non basic variable
 	double ncbv_dot_Biaj = 0.0;
+	double ncbv0 = 0.0;
+	double a1 = 0.0;
+	double b2 = 0.0;
+	double* temp = new double[nbv_count];
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+	double delta = 0.0;
 
-	for (int i = 0; i < n; i ++){
-		double temp0 = 0.0;
-		double temp1 = 0.0;
-		double delta = 0.0;
-		for (int j = 0; j < n; j++){
-			temp0 = ncbv(j,0);
-			temp1 = a[i][nbv[j]];
-			ncbv_dot_Biaj += temp0*temp1;
+	for (int i = 0; i < nbv_count; i ++){
+		ncbv_dot_Biaj = 0.0;
+		ncbv0 = 0.0;
+		a1 = 0.0;
+		b2 = 0.0;
+		for (int i = 0; i < nbv_count; i++){
+			temp[i] = 0.0;
+		}
+		delta = 0.0;
+		for (int j = 0; j < nbv_count; j++){
+			for (int m = 0; m < nbv_count; m++){
+				a1 = a[m][i];
+				b2 = B(m,j);
+				temp[j] += a1*b2;
+			}
+			ncbv0 = ncbv(j,0);
+			ncbv_dot_Biaj += ncbv0*temp[j];
 		}
 		while (ncbv_dot_Biaj - cb(i,0) - delta >= 0){
 			delta += .1;
@@ -129,17 +147,22 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	//Adding a new variable or activity (20,[1,2,3,4])
 	ncbv_dot_Biaj = 0.0;
-	double temp0 = 0.0;
-	double temp1 = 0.0;
-	double delta = 0.0;
-	for (int j = 0; j < k; j++){
-		if (j < ncbv.rows()){
-			temp0 = ncbv(j,0);
-		}else{
-			temp0 = 1;
+	ncbv0 = 0.0;
+	a1 = 0.0;
+	b2 = 0.0;
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+	delta = 0.0;
+
+	for (int j = 0; j < nbv_count; j++){
+		for (int m = 0; m < nbv_count; m++){
+			a1++;
+			b2 = B(m,j);
+			temp[j] += a1*b2;
 		}
-		temp1++;
-		ncbv_dot_Biaj += temp0*temp1;
+		ncbv0 = ncbv(j,0);
+		ncbv_dot_Biaj += ncbv0*temp[j];
 	}
 	if (ncbv_dot_Biaj - 20 > 0){
 		cout << "Adding a new activity 20 with Recources [";	
