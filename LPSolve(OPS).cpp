@@ -28,6 +28,8 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	int* bv = new int[];
 	int* nbv = new int[];
+	int bv_count = 0;
+	int nbv_count = 0;
 	double* c = new double[];
 	double** a = new double*[k];
 	for (int i = 0; i < n+1; i++){
@@ -45,10 +47,12 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			bv[h] = i;
 			cout << "bv " << h << " = " << bv[h] << endl;
 			h++;
+			bv_count++;
 		}else{
 			nbv[j] = i;
 			cout << "nbv" << j << " = " << nbv[j] << endl;
 			j++;
+			nbv_count++;
 		}
 	}
 
@@ -64,7 +68,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	
 	cout << "B: " << endl;
-	for (int i = 0; i < k; i++){
+	for (int i = 0; i < bv_count; i++){
 		for (int j = 0; j < k; j++){
 			B(j,i) = a[j][bv[i]];
 		}
@@ -74,7 +78,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	Bi = B.inverse();
 	
 	cout << "NBV: " << endl;
-	for (int i = 0; i < n; i++){
+	for (int i = 0; i < nbv_count; i++){
 		for (int j = 0; j < k; j++){
 			NB(j,i) = a[j][nbv[i]];
 		}
@@ -83,7 +87,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	cout << NB << endl;	
 
 	cout << "CB: " << endl;
-	for (int i = 0; i < k; i ++){
+	for (int i = 0; i < bv_count; i ++){
 		if (bv[i] >= n){
 			cb(i,0) = 0.0;
 		}else{
@@ -93,7 +97,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	cout << cb << endl;
 
 	cout << "NCBV: " << endl;
-	for (int i = 0; i < n; i ++){
+	for (int i = 0; i < nbv_count; i ++){
 		if (nbv[i] >= n){
 			ncbv(i,0)= 0.0;
 		}else{
@@ -119,45 +123,47 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			delta += .1;
 		};
 		
-		cout << "The Coefficiants of NBV" << i << " is in the range of " << delta << "." << endl;
+		cout << "The Coefficiants of NBV" << i << " can be added up by a maximum of  " << delta << "." << endl;
 		
 	}
 
-	//Adding a new variable or activity (20,[1,1,1,1])
+	//Adding a new variable or activity (20,[1,2,3,4])
 	ncbv_dot_Biaj = 0.0;
-	for (int i = 0; i < n; i ++){
-		double temp0 = 0.0;
-		double temp1 = 0.0;
-		double delta = 0.0;
-		for (int j = 0; j < n; j++){
+	double temp0 = 0.0;
+	double temp1 = 0.0;
+	double delta = 0.0;
+	for (int j = 0; j < k; j++){
+		if (j < ncbv.rows()){
 			temp0 = ncbv(j,0);
-			temp1 = 1;
-			ncbv_dot_Biaj += temp0*temp1;
+		}else{
+			temp0 = 1;
 		}
+		temp1++;
+		ncbv_dot_Biaj += temp0*temp1;
 	}
 	if (ncbv_dot_Biaj - 20 > 0){
 		cout << "Adding a new activity 20 with Recources [";	
 		for (int i = 0; i<k;i++){
-			cout << " 1 ";
+			cout << i+1 << " ";
 		}
 		cout << "] is NOT Reasonable." << endl ;
 	}
 	else{
 		cout << "Adding a new activity 20 with Recources [";
 		for (int i = 0; i<k;i++){
-			cout << " 1 ";
+			cout << i+1 << " ";
 		}
 		cout << "] is REASONABLE." << endl ;
 	}
 
 	//Testen welche Aktivität sinnvoll wäre
-	double delta = 1.0;
+	delta = 1.0;
 	while (ncbv_dot_Biaj - delta > 0 && delta != 0.0){
 		delta += .01;
 	}
 	cout << "Adding a new activity " << delta << " with Recources [";
 	for (int i = 0; i<k;i++){
-		cout << " 1 ";
+		cout << i+1 << " ";
 	}
 	cout << "] is REASONABLE." << endl ;
 }
