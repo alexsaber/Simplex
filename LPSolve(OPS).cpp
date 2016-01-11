@@ -215,11 +215,12 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	while (ncbv_dot_Biaj - 20 < 0){
 		a2 += 1;
 		for (int j = 0; j < k; j++){
-			switch (a2%4){
+			switch (a2%k){
 				case 0: temp_a = 0; break;
 				case 1: temp_a = 1; break;
 				case 2: temp_a = 2; break;
 				case 3: temp_a = 3; break;
+				default: temp_a = a2%k; break;
 			}
 			for (int m = 0; m < k; m++){
 				b2 = B(j,m);
