@@ -216,10 +216,10 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 		a2 += 1;
 		for (int j = 0; j < k; j++){
 			switch (a2%4){
-				case 0: temp_a = 0;
-				case 1: temp_a = 1;
-				case 2: temp_a = 2;
-				case 3: temp_a = 3;
+				case 0: temp_a = 0; break;
+				case 1: temp_a = 1; break;
+				case 2: temp_a = 2; break;
+				case 3: temp_a = 3; break;
 			}
 			for (int m = 0; m < k; m++){
 				b2 = B(j,m);
