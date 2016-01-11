@@ -128,22 +128,119 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			temp[i] = 0.0;
 		}
 		delta = 0.0;
-		for (int j = 0; j < nbv_count; j++){
-			for (int m = 0; m < nbv_count; m++){
+		for (int j = 0; j < k; j++){
+			for (int m = 0; m < k; m++){
 				a1 = a[m][i];
-				b2 = B(m,j);
+				b2 = B(j,m);
 				temp[j] += a1*b2;
 			}
-			ncbv0 = ncbv(j,0);
+			if (j < nbv_count){
+				ncbv0 = ncbv(j,0);
+			}else{
+				ncbv0 = 0.0;
+			}
 			ncbv_dot_Biaj += ncbv0*temp[j];
 		}
-		while (ncbv_dot_Biaj - cb(i,0) - delta >= 0){
+		while (ncbv_dot_Biaj - cb(i,0) - delta > 0){
 			delta += 1;
 		};
 		
 		cout << "The Coefficiants of NBV" << i << " can be added up by a maximum of  " << delta << "." << endl;
 		
 	}
+
+	//Adding a new variable or activity (20,[1,2,3,4])
+	ncbv_dot_Biaj = 0.0;
+	ncbv0 = 0.0;
+	a1 = 0.0;
+	b2 = 0.0;
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+	delta = 0.0;
+
+	for (int j = 0; j < k; j++){
+		for (int m = 0; m < k; m++){
+			a1++;
+			b2 = B(j,m);
+			temp[j] += a1*b2;
+		}
+		if (j < nbv_count){
+		ncbv0 = ncbv(j,0);
+		}else{
+			ncbv0 = 0.0;
+		}
+	ncbv_dot_Biaj += ncbv0*temp[j];
+	}
+	if (ncbv_dot_Biaj - 20 > 0){
+		cout << "Adding a new activity 20 with Recources [ ";
+		for (int i = 0; i<k;i++){
+			cout << i+1 << " ";
+		}
+		cout << "] is NOT Reasonable." << endl ;
+	}
+	else{
+		cout << "Adding a new activity 20 with Recources [ ";
+		for (int i = 0; i<k;i++){
+			cout << i+1 << " ";
+		}
+		cout << "] is REASONABLE." << endl ;
+	}
+
+	//Testen welche Aktivität sinnvoll wäre
+	delta = 1.0;
+	while (ncbv_dot_Biaj - delta < 0 && delta != 0.0){
+		delta += 1;
+	}
+	cout << "Adding a new activity " << delta << " with Recources [ ";
+	for (int i = 0; i<k;i++){
+		cout << i+1 << " ";
+	}
+	cout << "] is REASONABLE." << endl ;
+
+	//Testen welche Resourcen sinnvoll wären
+	int a2 = 0;
+	int temp_a = 0;
+	double* temp1 = new double[bv_count];
+	ncbv_dot_Biaj = 0.0;
+	ncbv0 = 0.0;
+	b2 = 0.0;
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+
+	for (int i = 0; i < bv_count; i++){
+		temp1[i] = 0.0;
+	}
+	while (ncbv_dot_Biaj - 20 < 0){
+		a2 += 1;
+		for (int j = 0; j < k; j++){
+			switch (a2%4){
+				case 0: temp_a = 0;
+				case 1: temp_a = 1;
+				case 2: temp_a = 2;
+				case 3: temp_a = 3;
+			}
+			for (int m = 0; m < k; m++){
+				b2 = B(j,m);
+				temp[j] += a2*b2;
+				temp1[temp_a] = a2;
+			}
+			if (j < nbv_count){
+			ncbv0 = ncbv(j,0);
+			}else{
+				ncbv0 = 0.0;
+			}
+			ncbv_dot_Biaj += ncbv0*temp[j];
+		}
+	}
+	cout << "To add the activity 20 one would have to add the resource [ ";
+	for (int i = 0; i < bv_count; i++){
+		cout << temp1[i] << " ";
+	}
+	cout << "]." << endl;
+	
+}
 
 	//Adding a new variable or activity (20,[1,2,3,4])
 	ncbv_dot_Biaj = 0.0;
