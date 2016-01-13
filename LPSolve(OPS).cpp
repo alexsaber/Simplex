@@ -39,7 +39,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	cout <<  "Basic & Non-Basic Variables als Positionen: " << endl;
 	for (int h=0,i=0,j = 0; i < n+k; i++){
-		if (optimal_matrix[n+1][i] == 0){
+		if (optimal_matrix[k][i] == 0){
 			bv[h] = i;
 			cout << "bv " << h << " = " << bv[h] << endl;
 			h++;
