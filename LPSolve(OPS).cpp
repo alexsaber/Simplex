@@ -63,7 +63,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 		cout << "a" << i << " = ";
 		for (int j = 0; j < k; j++){
 			a[j][i] = basis_matrix[j][i];
-			cout << a[j][i] << " ";
+			cout << a[j][i] << "\t";
 		}
 		cout << endl;
 	}
@@ -310,13 +310,15 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	for (int i = 0; i < k + 1; i++) {
 		for (int j = 0; j < k + n + 2; j++) {
 			basis_table[i][j] = table[i][j];
-			cout << table[i][j] << " ";
+			cout << table[i][j] << "\t";
 		}
 		cout << endl;
 	}
 
 
 	//----BEGIN CALCULATION-----
+
+	cout.precision(4);
 
 
 	int number_of_rows = k + 1;
@@ -403,7 +405,7 @@ do{
 	cout << "Results after devision: " << endl;
 
 	for (int i = 0; i < number_of_columns - 1; i++) {
-		cout << table[index_pivot_row][i] << " ";
+		cout << table[index_pivot_row][i] << "\t";
 	}
 
 	cout << endl;
@@ -424,9 +426,10 @@ do{
 
 	//testing tabelle
 	cout << "Outputting the whole table after an iteration" << endl;
+	//cout.precision(4);
 	for (int i = 0; i < k + 1; i++) {
 		for (int j = 0; j < k + n + 2; j++) {
-			cout << table[i][j] << " ";
+			cout << table[i][j] << "\t";
 		}
 		cout << endl;
 	}
@@ -461,12 +464,9 @@ do{
 	}
 
 	//sensitivity
-<<<<<<< HEAD
 
-	//double* sensitivity_rs = sensAnalysis(n, k, basis_table, table, c);
-=======
 	sensAnalysis(n, k, basis_table, table, c);
->>>>>>> 3ed8ce97f39d7023e67e902db4fe008fa8ddcb94
+
 
 	return results;
 }
