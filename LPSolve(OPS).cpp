@@ -322,7 +322,7 @@ do{
 
 	//sensitivity
 
-	double* sensitivity_rs = sensAnalysis(n, k, basis_table, table, c);
+	//double* sensitivity_rs = sensAnalysis(n, k, basis_table, table, c);
 
 	return results;
 }
