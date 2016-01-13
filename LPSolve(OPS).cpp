@@ -21,36 +21,44 @@ bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows
 	return false;
 }
 
-double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, double *vector_c){
+void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, double *vector_c){
 	//n = iterator_matrix
 	//basis = basis_matrix
 	//k = iterator_vektor
 
 	int* bv = new int[];
 	int* nbv = new int[];
+	int bv_count = 0;
+	int nbv_count = 0;
 	double* c = new double[];
 	double** a = new double*[k];
-	for (int i = 0; i < n+1; i++){
+	for (int i = 0; i < n+k+1; i++){
 		a[i] = new double[n+k+1];
 	}
-	MatrixXd B(k,k);
-	MatrixXd Bi(k,k);
-	MatrixXd NB(k,n);
 
-	cout << endl <<  "Basic & Non-Basic Variables als Positionen: " << endl;
+
+	cout <<  "Basic & Non-Basic Variables als Positionen: " << endl;
 	for (int h=0,i=0,j = 0; i < n+k; i++){
-		if (optimal_matrix[n+1][i] == 0){
+		if (optimal_matrix[k][i] == 0){
 			bv[h] = i;
 			cout << "bv " << h << " = " << bv[h] << endl;
 			h++;
+			bv_count++;
 		}else{
 			nbv[j] = i;
 			cout << "nbv" << j << " = " << nbv[j] << endl;
 			j++;
+			nbv_count++;
 		}
 	}
 
-	cout << endl <<  "a[i]s: " << endl;
+	MatrixXd cb(bv_count,1);
+	MatrixXd ncbv(nbv_count,1);
+	MatrixXd B(bv_count,bv_count);
+	MatrixXd Bi(bv_count,bv_count);
+	MatrixXd NB(nbv_count,nbv_count);
+
+	cout << "a[i]s: " << endl;
 	for (int i = 0; i < n+k; i++){
 		cout << "a" << i << " = ";
 		for (int j = 0; j < k; j++){
@@ -61,55 +69,187 @@ double* sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix
 	}
 
 	
-	cout << endl << "B: " << endl;
-	for (int i = 0; i < k; i++){
-		for (int j = 0; j < k; j++){
+	cout << "B: " << endl;
+	for (int i = 0; i < bv_count; i++){
+		for (int j = 0; j < bv_count; j++){
 			B(j,i) = a[j][bv[i]];
 		}
 	}
+
 	cout << B << endl;
 
 	Bi = B.inverse();
-
-	cout << endl << "B-1: " << endl;
-	cout  << endl << Bi << endl;
-
-	//cout << endl << "B*B-1: " << endl;
-	//cout << B * Bi << endl;
 	
-	cout << endl << "NBV: " << endl;
-	for (int i = 0; i < n; i++){
-		for (int j = 0; j < k; j++){
+	cout << "NBV: " << endl;
+	for (int i = 0; i < nbv_count; i++){
+		for (int j = 0; j < nbv_count; j++){
 			NB(j,i) = a[j][nbv[i]];
 		}
 	}
 
 	cout << NB << endl;	
 
-	cout << endl << "CB: " << endl;
-	for (int i = 0; i < k; i ++){
+	cout << "CB: " << endl;
+	for (int i = 0; i < bv_count; i ++){
 		if (bv[i] >= n){
-			c[i]= 0;
+			cb(i,0) = 0.0;
 		}else{
-			c[i]= vector_c[bv[i]];
+			cb(i,0) = vector_c[bv[i]];
 		}
-		cout << c[i] << " ";
 	}
-	cout << endl;
+	cout << cb << endl;
 
-	cout << endl << "NCBV: " << endl;
-	for (int i = 0; i < n; i ++){
+	cout << "NCBV: " << endl;
+	for (int i = 0; i < nbv_count; i ++){
 		if (nbv[i] >= n){
-			c[i]= 0;
+			ncbv(i,0)= 0.0;
 		}else{
-			c[i]= vector_c[nbv[i]];
+			ncbv(i,0) = vector_c[nbv[i]];
 		}
-		cout << c[i] << " ";
 	}
-	cout << endl;
 
-	return c;
+	cout << ncbv << endl;
+
+	//Changing the Object function coefficiant of a non basic variable
+	double ncbv_dot_Biaj = 0.0;
+	double ncbv0 = 0.0;
+	double a1 = 0.0;
+	double b2 = 0.0;
+	double* temp = new double[nbv_count];
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+	double delta = 0.0;
+
+	for (int i = 0; i < nbv_count; i ++){
+		ncbv_dot_Biaj = 0.0;
+		ncbv0 = 0.0;
+		a1 = 0.0;
+		b2 = 0.0;
+		for (int m = 0; m < nbv_count; m++){
+			temp[m] = 0.0;
+		}
+		delta = 0.0;
+		for (int j = 0; j < bv_count; j++){
+			for (int m = 0; m < bv_count; m++){
+				a1 = a[m][i];
+				b2 = Bi(j,m);
+				temp[j] += a1*b2;
+			}
+			if (j < nbv_count){
+				ncbv0 = ncbv(j,0);
+			}else{
+				ncbv0 = 0.0;
+			}
+			ncbv_dot_Biaj += ncbv0*temp[j];
+		}
+		while (ncbv_dot_Biaj - cb(i,0) - delta > 0){
+			delta += 1;
+		};
+		
+		cout << "The Coefficiants of NBV" << i << " can be added up by a maximum of  " << delta << "." << endl;
+		
+	}
+	
+	//Adding a new variable or activity (20,[1,2,3,4])
+	bool test = false;
+	ncbv_dot_Biaj = 0.0;
+	ncbv0 = 0.0;
+	a1 = 0.0;
+	b2 = 0.0;
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+	delta = 0.0;
+
+	for (int j = 0; j < bv_count; j++){
+		for (int m = 0; m < bv_count; m++){
+			a1++;
+			b2 = Bi(j,m);
+			temp[j] += a1*b2;
+		}
+		if (j < nbv_count){
+		ncbv0 = ncbv(j,0);
+		}else{
+			ncbv0 = 0.0;
+		}
+	ncbv_dot_Biaj += ncbv0*temp[j];
+	}
+	if (ncbv_dot_Biaj - 20 > 0){
+		cout << "Adding a new activity 20 with Recources [ ";
+		for (int i = 0; i<k;i++){
+			cout << i+1 << " ";
+		}
+		cout << "] is NOT Reasonable." << endl ;
+	}
+	else{
+		cout << "Adding a new activity 20 with Recources [ ";
+		for (int i = 0; i<k;i++){
+			cout << i+1 << " ";
+			test = true;
+		}
+		cout << "] is REASONABLE." << endl ;
+	}
+	
+	//Testen welche Aktivität sinnvoll wäre
+if (!test){
+	delta = 1.0;
+	while (ncbv_dot_Biaj - delta > 0 && delta != 0.0){
+		delta += 1;
+	}
+	cout << "Adding a new activity " << delta << " with Recources [ ";
+	for (int i = 0; i<k;i++){
+		cout << i+1 << " ";
+	}
+	cout << "] is REASONABLE." << endl ;
+
+	//Testen welche Resourcen sinnvoll wären
+	int a2 = 0;
+	int temp_a = 0;
+	double* temp1 = new double[bv_count];
+	ncbv_dot_Biaj = 0.0;
+	ncbv0 = 0.0;
+	b2 = 0.0;
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+
+	for (int i = 0; i < bv_count; i++){
+		temp1[i] = 0.0;
+	}
+	while (ncbv_dot_Biaj - 20 < 0){
+		a2 += 1;
+		for (int j = 0; j < bv_count; j++){
+			switch (a2%k){
+				case 0: temp_a = 0; break;
+				case 1: temp_a = 1; break;
+				case 2: temp_a = 2; break;
+				case 3: temp_a = 3; break;
+				default: temp_a = a2%k; break;
+			}
+			for (int m = 0; m < bv_count; m++){
+				b2 = Bi(j,m);
+				temp[j] += a2*b2;
+				temp1[temp_a] = a2;
+			}
+			if (j < nbv_count){
+			ncbv0 = ncbv(j,0);
+			}else{
+				ncbv0 = 0.0;
+			}
+			ncbv_dot_Biaj += ncbv0*temp[j];
+		}
+	}
+	cout << "To add the activity 20 one would have to add the resource [ ";
+	for (int i = 0; i < bv_count; i++){
+		cout << temp1[i] << " ";
+	}
+	cout << "]." << endl;
 }
+	
+}
+
+
 
 
 double* lpsolve(int n, double *c, int k, double **A, double *b){
@@ -321,8 +461,12 @@ do{
 	}
 
 	//sensitivity
+<<<<<<< HEAD
 
 	//double* sensitivity_rs = sensAnalysis(n, k, basis_table, table, c);
+=======
+	sensAnalysis(n, k, basis_table, table, c);
+>>>>>>> 3ed8ce97f39d7023e67e902db4fe008fa8ddcb94
 
 	return results;
 }
