@@ -203,8 +203,10 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	cout << endl;
 
-	//Changing the Object function coefficiant of a non basic variable
+	//Changing the Object function coefficiant of a basic variable
+	double cbv_dot_Biaj = 0.0;
 	double cnbv_dot_Biaj = 0.0;
+	double cbv0 = 0.0;
 	double cnbv0 = 0.0;
 	double a1 = 0.0;
 	double b2 = 0.0;
@@ -214,7 +216,47 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	}
 	double delta = 0.0;
 
-	cout << "Formula used: CNBV*Bi*a[j] - delta > 0" << endl;
+	cout << endl;
+	for (int i = 0; i < bv_count; i ++){
+		cbv_dot_Biaj = 0.0;
+		cbv0 = 0.0;
+		a1 = 0.0;
+		b2 = 0.0;
+		for (int m = 0; m < bv_count; m++){
+			temp[m] = 0.0;
+		}
+		delta = 0.0;
+		for (int j = 0; j < bv_count; j++){
+			for (int m = 0; m < bv_count; m++){
+				a1 = a[m][i];
+				b2 = Bi(j,m);
+				temp[j] += a1*b2;
+			}
+			if (j < nbv_count){
+				cbv0 = cnbv(j,0);
+			}else{
+				cbv0 = 0.0;
+			}
+			cbv_dot_Biaj += cbv0*temp[j];
+		}
+		while (cbv_dot_Biaj + delta <= 0){
+			delta += 1;
+		};
+		
+		cout << "The Coefficiants of BV" << i << " can be added up by a maximum of  " << delta << "." << endl;
+		
+	}
+
+	cout << endl;
+
+	//Changing the Object function coefficiant of a non basic variable
+	cnbv0 = 0.0;
+	a1 = 0.0;
+	b2 = 0.0;
+	for (int i = 0; i < nbv_count; i++){
+		temp[i] = 0.0;
+	}
+	delta = 0.0;
 	cout << endl;
 	for (int i = 0; i < nbv_count; i ++){
 		cnbv_dot_Biaj = 0.0;
@@ -966,4 +1008,3 @@ int _tmain(int argc, _TCHAR* argv[]){
 
 	return 0;
 }
-
