@@ -11,7 +11,7 @@
 using Eigen::MatrixXd;
 using namespace std;
 
-
+bool show_log = false;
 
 bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows){
 	for (int i = 0; i < number_of_columns - 2; i++) {
@@ -305,8 +305,14 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 		table[i][k + n + 1] = 0;
 	}
 
-	//testing tabelle
-	cout << "testing table" << endl;
+	
+	cout << "Ausgangstableau:" << endl;
+	//outputting names of columns
+	for (int j = 0; j < k + n; j++) {
+		cout << "X" << j+1 << "\t";
+	}
+	cout << "RS" << "\t" << "Q" << endl;
+
 	for (int i = 0; i < k + 1; i++) {
 		for (int j = 0; j < k + n + 2; j++) {
 			basis_table[i][j] = table[i][j];
@@ -325,8 +331,8 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	int number_of_columns = k + n + 2;
 	int index_quotient_column = number_of_columns - 1;
 
-	cout << "number_of_rows: " << number_of_rows << endl;
-	cout << "number_of_columns: " << number_of_columns << endl;
+	if (show_log) cout << "number_of_rows: " << number_of_rows << endl;
+	if (show_log) cout << "number_of_columns: " << number_of_columns << endl;
 
 	//find the highest number (without "-") in the last row OR find pivotcolumn
 do{
@@ -349,6 +355,8 @@ do{
 
 	//calculate Quotient
 
+	cout << "Kalkuliere Quotient" << endl;
+
 	for (int i = 0; i < number_of_rows - 1; i++) {
 		if (table[i][index_pivot_column] != 0){
 			table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][index_pivot_column];
@@ -356,14 +364,20 @@ do{
 		else
 			table[i][index_quotient_column] = -1;
 	}
-	cout << "Quotient: " << endl;
 
-	for (int i = 0; i < number_of_rows - 1; i++) {
-
-		cout << table[i][index_quotient_column] << " ";
-
+	cout << "Tableau nach Kalkulation:" << endl;
+	//outputting names of columns
+	for (int j = 0; j < k + n; j++) {
+		cout << "X" << j + 1 << "\t";
 	}
-	cout << endl;
+	cout << "RS" << "\t" << "Q" << endl;
+
+	for (int i = 0; i < k + 1; i++) {
+		for (int j = 0; j < k + n + 2; j++) 
+			cout << table[i][j] << "\t";
+		
+		cout << endl;
+	}
 
 
 
@@ -410,7 +424,7 @@ do{
 
 	cout << endl;
 
-	cout << "Brinding all values in the pivot column to 0 (except of the pivot element itself of course)" << endl;
+	cout << "Brinding all values in the pivot column to 0 (except of the pivot element itself)" << endl;
 
 	for (int i = 0; i < number_of_rows; i++) {
 		if (i != index_pivot_row && table[i][index_pivot_column] != 0){
@@ -437,6 +451,55 @@ do{
 	cout << "hasPositiveValues(table, number_of_columns, number_of_rows) returned: " << hasPositiveValues(table, number_of_columns, number_of_rows) << endl;
 
 }while (hasPositiveValues(table, number_of_columns, number_of_rows));
+
+
+
+
+{
+
+	double* results = new double[n];
+	for (int i = 0; i < n; i++){
+		results[i] = 0;
+	}
+	int results_counter = 0;
+
+	for (int i = 0; i < n; i++) {
+		int row_index_where_ONE_was_found = -1;
+		bool not_only_zeros_and_ONE = false;
+		for (int j = 0; j < number_of_rows; j++) {
+			if (table[j][i] == 1){
+				row_index_where_ONE_was_found = j;
+			}
+			else if (table[j][i] != 0){
+				not_only_zeros_and_ONE = true;
+			}
+		}
+		if (not_only_zeros_and_ONE != true && row_index_where_ONE_was_found >= 0){
+			results[results_counter++] = table[row_index_where_ONE_was_found][number_of_columns - 2];
+		}
+		else
+			results_counter++;
+	}
+
+
+	//results
+
+	cout << endl << "First optimal solution. Final results: " << endl;
+	for (int i = 0; i < n; i++) {
+		cout << "x" << i + 1 << " = " << results[i] << ", ";
+	}
+	cout << endl << endl;
+
+}
+
+
+
+
+
+
+
+
+
 
 
 	//////////////////////////////////////////////
@@ -476,18 +539,141 @@ do{
 	int *index_column_another_solution = nullptr;
 
 	for (int i = 0; i < k + n; i++){
-		if (basic_variables[i] == true && (table[k][i] == 0)){
+		if (basic_variables[i] == false && (table[k][i] == 0)){
 			index_column_another_solution = new int;
 			*index_column_another_solution = i;
-			
 		}
 	}
 	cout << endl;
 
 	if (index_column_another_solution == nullptr)
 		cout << "This lp has only one solution" << endl;
-	else
-		cout << "This lp has multiple solutions" << endl;
+	else{
+		cout << "This lp has multiple solutions" << endl << 
+			"x" << *index_column_another_solution+1 << " can become a basic variable without affecting functions results" << endl;
+
+		/////////////////////////////////////////////////////////
+		//calculate the coordinates of the new point
+
+
+		//code from above START
+
+		//calculate Quotient
+
+		for (int i = 0; i < number_of_rows - 1; i++) {
+			if (table[i][*index_column_another_solution] != 0){
+				table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][*index_column_another_solution];
+			}
+			else
+				table[i][index_quotient_column] = -1;
+		}
+		cout << "Quotient: " << endl;
+
+		for (int i = 0; i < number_of_rows - 1; i++) {
+
+			cout << table[i][index_quotient_column] << "\t";
+
+		}
+		cout << endl;
+
+
+
+		//find the smallest number in the Quotient column OR find pivot row
+
+		int index_pivot_row = 0;
+		double temp_smallest = 0; //what if it can't be set at all???
+		bool first_set = false;
+
+		for (int i = 0; i < number_of_rows; i++) {
+			if (first_set == false && table[i][index_quotient_column] > 0){
+				temp_smallest = table[i][index_quotient_column];
+				index_pivot_row = i;
+				first_set = true;
+			}
+			else
+				if (table[i][index_quotient_column] > 0 && table[i][index_quotient_column] < temp_smallest){
+					temp_smallest = table[i][index_quotient_column];
+					index_pivot_row = i;
+				}
+		}
+
+		cout << "The smallest quotient number is " << temp_smallest << " at index " << index_pivot_row << endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
+
+		cout << "Deviding each element in the row " << index_pivot_row << " by " << table[index_pivot_row][*index_column_another_solution] << endl;
+
+		double temp_dev = table[index_pivot_row][*index_column_another_solution];
+
+		for (int i = 0; i < number_of_columns - 1; i++) {
+			if (table[index_pivot_row][*index_column_another_solution] == 0){
+				//!!!!!!!!!!!!!!!!TO THINK ABOUT!!!!!!!!!!!!!!!!
+				break;
+			}
+			table[index_pivot_row][i] /= temp_dev;
+		}
+
+		cout << "Results after devision: " << endl;
+
+		for (int i = 0; i < number_of_columns - 1; i++) {
+			cout << table[index_pivot_row][i] << "\t";
+		}
+
+		cout << endl;
+
+		cout << "Brinding all values in the pivot column to 0 (except of the pivot element itself)" << endl;
+
+		for (int i = 0; i < number_of_rows; i++) {
+			if (i != index_pivot_row && table[i][*index_column_another_solution] != 0){
+				double temp_multiplyer = table[i][*index_column_another_solution];
+				for (int j = 0; j < number_of_columns - 1; j++) {
+					table[i][j] = table[i][j] - (table[index_pivot_row][j] * temp_multiplyer);
+				}
+			}
+
+		}
+
+
+
+		//testing tabelle
+		cout << "Outputting the whole table after an iteration" << endl;
+		cout.precision(3);
+		for (int i = 0; i < k + 1; i++) {//zeilen
+			for (int j = 0; j < k + n + 2; j++) {//spalten
+				cout << table[i][j] << "\t";
+			}
+			cout << endl;
+		}
+
+
+
+
+
+
+
+		//code from above END
+
+
+	}
+		
 
 
 
@@ -573,7 +759,7 @@ int _tmain(int argc, _TCHAR* argv[]){
 
 	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
 
-	cout << endl << "Final results: " << endl;
+	cout << endl << "Second. Final results: " << endl;
 	for (int i = 0; i < n; i++) {
 		cout << "x" << i+1 << " = " << results[i] << ", ";
 	}
