@@ -86,39 +86,60 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 		a[i] = new double[n+k+1];
 	}
 
-
-	cout <<  "Basic & Non-Basic Variables als Positionen: " << endl;
+	//cout << endl;
+	//cout << "Basic & Non-Basic Variables as positions. " << endl;
+	//cout << "The order is determent.";
 	for (int h=0,i=0,j = 0; i < n+k; i++){
 		if (optimal_matrix[k][i] == 0){
 			bv[h] = i;
-			cout << "bv " << h << " = " << bv[h] << endl;
 			h++;
 			bv_count++;
 		}else{
 			nbv[j] = i;
-			cout << "nbv" << j << " = " << nbv[j] << endl;
 			j++;
 			nbv_count++;
 		}
 	}
 
+	/*
+	*if u want to know the positions of the basic Variables.
+
+	cout << "Basic Variables as positions:" << endl;
+	for (int i = 0; i < bv_count; i++){
+		cout << "Basic Variable " << i << ":	" << bv[i] << endl; 
+	}
+
+	cout << "Non Basic Variables as positions:" << endl;
+	for (int i = 0; i < nbv_count; i++){
+		cout << "Non Basic Variable " << i << ":	" << nbv[i] << endl; 
+	}
+	*/
+
 	MatrixXd cb(bv_count,1);
-	MatrixXd ncbv(nbv_count,1);
+	MatrixXd cnbv(nbv_count,1);
 	MatrixXd B(bv_count,bv_count);
 	MatrixXd Bi(bv_count,bv_count);
-	MatrixXd NB(nbv_count,nbv_count);
+	MatrixXd NB(bv_count,nbv_count);
 
+	cout << endl;
+
+	cout << "The Vectors a[i] are being computed." << endl;
+	cout << "Dependent on the position of the Basic-Variables." << endl;
+	cout << "The order is determent." << endl;
 	cout << "a[i]s: " << endl;
 	for (int i = 0; i < n+k; i++){
-		cout << "a" << i << " = ";
+		cout << "a" << i << " = [ ";
 		for (int j = 0; j < k; j++){
 			a[j][i] = basis_matrix[j][i];
-			cout << a[j][i] << "\t";
+			cout << a[j][i] << " ";
 		}
-		cout << endl;
+		cout << "]" << endl;
 	}
 
 	
+	cout << endl;
+
+	cout << "The Basic-Variables itself." << endl;
 	cout << "B: " << endl;
 	for (int i = 0; i < bv_count; i++){
 		for (int j = 0; j < bv_count; j++){
@@ -128,17 +149,25 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	cout << B << endl;
 
+	cout << endl;
+
+	cout << "The invers of the Basic-Variables  is being computed." << endl;
 	Bi = B.inverse();
 	
+	cout << "The Non-Basic-Variables itself." << endl;
 	cout << "NBV: " << endl;
 	for (int i = 0; i < nbv_count; i++){
-		for (int j = 0; j < nbv_count; j++){
+		for (int j = 0; j < bv_count; j++){
 			NB(j,i) = a[j][nbv[i]];
 		}
 	}
 
 	cout << NB << endl;	
 
+	cout << endl;
+
+	cout << "The constants of the basic variables (CB) as in vector_c." << endl;
+	cout << "The order is determent." << endl;
 	cout << "CB: " << endl;
 	for (int i = 0; i < bv_count; i ++){
 		if (bv[i] >= n){
@@ -147,22 +176,36 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			cb(i,0) = vector_c[bv[i]];
 		}
 	}
-	cout << cb << endl;
+	cout << " [ ";
+	for (int i = 0; i < bv_count; i++){
+		cout << cb(i,0) << " " ;
+	}
+	cout << "]" << endl;	
 
-	cout << "NCBV: " << endl;
+	cout << endl;
+
+	cout << "The Constants of the non-basic-variables (CNBV) as in vector_c." << endl;
+	cout << "The order is determent." << endl;
+	cout << "CNBV: " << endl;
 	for (int i = 0; i < nbv_count; i ++){
 		if (nbv[i] >= n){
-			ncbv(i,0)= 0.0;
+			cnbv(i,0)= 0.0;
 		}else{
-			ncbv(i,0) = vector_c[nbv[i]];
+			cnbv(i,0) = vector_c[nbv[i]];
 		}
 	}
 
-	cout << ncbv << endl;
+	cout << " [ ";
+	for (int i = 0; i < nbv_count; i++){
+		cout << cnbv(i,0) << " " ;
+	}
+	cout << "]" << endl;	
+
+	cout << endl;
 
 	//Changing the Object function coefficiant of a non basic variable
-	double ncbv_dot_Biaj = 0.0;
-	double ncbv0 = 0.0;
+	double cnbv_dot_Biaj = 0.0;
+	double cnbv0 = 0.0;
 	double a1 = 0.0;
 	double b2 = 0.0;
 	double* temp = new double[nbv_count];
@@ -171,9 +214,11 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	}
 	double delta = 0.0;
 
+	cout << "Formula used: CNBV*Bi*a[j] - delta > 0" << endl;
+	cout << endl;
 	for (int i = 0; i < nbv_count; i ++){
-		ncbv_dot_Biaj = 0.0;
-		ncbv0 = 0.0;
+		cnbv_dot_Biaj = 0.0;
+		cnbv0 = 0.0;
 		a1 = 0.0;
 		b2 = 0.0;
 		for (int m = 0; m < nbv_count; m++){
@@ -187,24 +232,26 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 				temp[j] += a1*b2;
 			}
 			if (j < nbv_count){
-				ncbv0 = ncbv(j,0);
+				cnbv0 = cnbv(j,0);
 			}else{
-				ncbv0 = 0.0;
+				cnbv0 = 0.0;
 			}
-			ncbv_dot_Biaj += ncbv0*temp[j];
+			cnbv_dot_Biaj += cnbv0*temp[j];
 		}
-		while (ncbv_dot_Biaj - cb(i,0) - delta > 0){
+		while (cnbv_dot_Biaj - cb(i,0) - delta > 0){
 			delta += 1;
 		};
 		
 		cout << "The Coefficiants of NBV" << i << " can be added up by a maximum of  " << delta << "." << endl;
 		
 	}
+
+	cout << endl;
 	
 	//Adding a new variable or activity (20,[1,2,3,4])
 	bool test = false;
-	ncbv_dot_Biaj = 0.0;
-	ncbv0 = 0.0;
+	cnbv_dot_Biaj = 0.0;
+	cnbv0 = 0.0;
 	a1 = 0.0;
 	b2 = 0.0;
 	for (int i = 0; i < nbv_count; i++){
@@ -219,46 +266,50 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			temp[j] += a1*b2;
 		}
 		if (j < nbv_count){
-		ncbv0 = ncbv(j,0);
+		cnbv0 = cnbv(j,0);
 		}else{
-			ncbv0 = 0.0;
+			cnbv0 = 0.0;
 		}
-	ncbv_dot_Biaj += ncbv0*temp[j];
+	cnbv_dot_Biaj += cnbv0*temp[j];
 	}
-	if (ncbv_dot_Biaj - 20 > 0){
-		cout << "Adding a new activity 20 with Recources [ ";
+	if (cnbv_dot_Biaj - 20 > 0){
+		cout << "Adding a new activity <20> with Recources" << endl << " [ ";
 		for (int i = 0; i<k;i++){
 			cout << i+1 << " ";
 		}
-		cout << "] is NOT Reasonable." << endl ;
+		cout << "]" << endl << "is NOT Reasonable." << endl ;
 	}
 	else{
-		cout << "Adding a new activity 20 with Recources [ ";
+		cout << "Adding a new activity <20> with Recources" << endl << " [ ";
 		for (int i = 0; i<k;i++){
 			cout << i+1 << " ";
 			test = true;
 		}
-		cout << "] is REASONABLE." << endl ;
+		cout << "]" << endl << "is REASONABLE." << endl ;
 	}
+
+	cout << endl;
 	
 	//Testen welche Aktivität sinnvoll wäre
 if (!test){
 	delta = 1.0;
-	while (ncbv_dot_Biaj - delta > 0 && delta != 0.0){
+	while (cnbv_dot_Biaj - delta > 0 && delta != 0.0){
 		delta += 1;
 	}
-	cout << "Adding a new activity " << delta << " with Recources [ ";
+	cout << "Adding a new activity <" << delta << "> with Recources" << endl << " [ ";
 	for (int i = 0; i<k;i++){
 		cout << i+1 << " ";
 	}
-	cout << "] is REASONABLE." << endl ;
+	cout << "]" << endl << "is REASONABLE." << endl ;
+
+	cout << endl;
 
 	//Testen welche Resourcen sinnvoll wären
 	int a2 = 0;
 	int temp_a = 0;
 	double* temp1 = new double[bv_count];
-	ncbv_dot_Biaj = 0.0;
-	ncbv0 = 0.0;
+	cnbv_dot_Biaj = 0.0;
+	cnbv0 = 0.0;
 	b2 = 0.0;
 	for (int i = 0; i < nbv_count; i++){
 		temp[i] = 0.0;
@@ -267,7 +318,7 @@ if (!test){
 	for (int i = 0; i < bv_count; i++){
 		temp1[i] = 0.0;
 	}
-	while (ncbv_dot_Biaj - 20 < 0){
+	while (cnbv_dot_Biaj - 20 < 0){
 		a2 += 1;
 		for (int j = 0; j < bv_count; j++){
 			switch (a2%k){
@@ -283,14 +334,14 @@ if (!test){
 				temp1[temp_a] = a2;
 			}
 			if (j < nbv_count){
-			ncbv0 = ncbv(j,0);
+			cnbv0 = cnbv(j,0);
 			}else{
-				ncbv0 = 0.0;
+				cnbv0 = 0.0;
 			}
-			ncbv_dot_Biaj += ncbv0*temp[j];
+			cnbv_dot_Biaj += cnbv0*temp[j];
 		}
 	}
-	cout << "To add the activity 20 one would have to add the resource [ ";
+	cout << "To add the activity <20> one would have to add the resource" << endl << " [ ";
 	for (int i = 0; i < bv_count; i++){
 		cout << temp1[i] << " ";
 	}
@@ -823,14 +874,10 @@ do{
 
 
 	}
-		
-
-
 
 	//sensitivity
 
-	//sensAnalysis(n, k, basis_table, table, c);
-
+	sensAnalysis(n, k, basis_table, table, c);
 
 	return results_first;
 }
@@ -839,7 +886,24 @@ do{
 
 int _tmain(int argc, _TCHAR* argv[]){
 
+	string testfile;
 	ifstream file("testfile.txt");
+	bool input = false;
+	while(!input){
+	try{
+		cout << "Name of Input file without format (this has to be a .txt file): ";
+		cin >> testfile;
+		ifstream file(testfile + ".txt");
+		if (testfile[0] != 't' && testfile[1] != 'e' && testfile[2] != 's' && testfile[3] != 't'){
+			throw 1;
+		}
+		input = !input;
+	}catch(int e){
+		cout << "Der Name der Datei muss mit <test> beginnen." << endl;
+	}
+	}
+
+
 	int n, k; // n Zeilen, k Spalten
 	file >> n >> k;
 	if (show_log) cout << "n: " << n << ", k: " << k << endl;
@@ -887,10 +951,6 @@ int _tmain(int argc, _TCHAR* argv[]){
 		}
 	}
 
-
-	
-
-
 	//results
 
 	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
@@ -900,7 +960,6 @@ int _tmain(int argc, _TCHAR* argv[]){
 		cout << "x" << i+1 << " = " << results[i] << ", ";
 	}
 	cout << endl << endl;
-
 
 	system("pause");
 
