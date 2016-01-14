@@ -421,7 +421,7 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 
 	output_basic_vars(table, k, n);
 
-	cout << "RS steht die \"rechte Seite\" des (urspruenglichen) Gleichungssystems." << endl;
+	cout << "RS steht für die \"rechte Seite\" des (urspruenglichen) Gleichungssystems." << endl;
 	cout << endl;
 	//----BEGIN CALCULATION-----
 
@@ -884,10 +884,57 @@ do{
 
 
 
-int _tmain(int argc, _TCHAR* argv[]){
+int main(int argc, char* argv[]){
 
+
+	
+	if (argc < 2){
+		cout << "Man muss eine *.txt Datei als erster Parameter uebergeben!" << endl;
+		return 1;
+	}
+
+	ifstream file(argv[1]);
+	if (!file.good()) {
+		cout << "Etwas stimmt mit der Datei nicht!" << endl;
+		return 1;
+	}
+
+	std::string file_str = argv[1];
+	if (file_str.find(".txt") != std::string::npos) {
+		cout << "Die datei gefunden!" << endl;
+	}
+	else{
+		cout << "Das soll eine txt Datei sein!" << endl;
+		return 1;
+	}
+
+	show_log = false;
+	//bool min_active = false;
+	for (int i = 1; i < argc; i++){
+		cout << argv[i] << endl;
+		std::string arg_str = argv[i];
+		std::string log_str = "show_log";
+		if (arg_str == log_str) {
+			cout << "Log-Infos sind aktiv" << endl;
+			show_log = true;
+		}
+		/*
+		if (arg_str.compare("min")) {
+			min_active = true;
+		}
+		*/
+	}
+	/*
+	if (min_active)
+		cout << "Die Zielfunktion wird minimiert" << endl;
+	else
+		cout << "Die Zielfunktion wird maximiert" << endl;
+	*/
+
+	/*
 	string testfile;
 	ifstream file("testfile.txt");
+	
 	bool input = false;
 	while(!input){
 	try{
@@ -902,7 +949,7 @@ int _tmain(int argc, _TCHAR* argv[]){
 		cout << "Der Name der Datei muss mit <test> beginnen." << endl;
 	}
 	}
-
+	*/
 
 	int n, k; // n Zeilen, k Spalten
 	file >> n >> k;
@@ -912,6 +959,15 @@ int _tmain(int argc, _TCHAR* argv[]){
 	for (int i = 0; i < n; i++) {
 		file >> vector_c[i];
 	}
+	/*
+	if (min_active){
+		for (int i = 0; i < n; i++) {
+			double value = vector_c[i];
+			vector_c[i] = value * (-1.0);
+		}
+	}
+	*/
+
 	//testing vector_c
 	if (show_log){
 		cout << "vector_c" << endl;
@@ -919,6 +975,8 @@ int _tmain(int argc, _TCHAR* argv[]){
 			cout << vector_c[i] << endl;
 		}
 	}
+
+	
 
 	double** matrix = new double*[k];//Spalten
 	double *vector_b = new double[k];
@@ -948,6 +1006,15 @@ int _tmain(int argc, _TCHAR* argv[]){
 		cout << "vector_b" << endl;
 		for (int i = 0; i < k; i++) {
 			cout << vector_b[i] << endl;
+		}
+	}
+
+	//testing if there are negativ numbers
+
+	for (int i = 0; i < k; i++) {
+		if (vector_b[i] < 0){
+			cout << "Die Ungleichungen können keine negativen Zahlen auf der rechten Seite haben" << endl;
+			return 1;
 		}
 	}
 
