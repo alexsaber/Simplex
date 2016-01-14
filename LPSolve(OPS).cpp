@@ -13,6 +13,56 @@ using namespace std;
 
 bool show_log = false;
 
+
+void output_basic_vars(double ** table, int k, int n){
+//finding basic and non-basic variables
+bool *basic_variables = new bool[k + n];
+for (int i = 0; i < k + n; i++){
+	basic_variables[i] = false;
+}
+
+
+for (int j = 0; j < k + n; j++) {//spalten
+	for (int i = 0; i < k + 1; i++) {//zeilen
+		if (table[i][j] != 0.0 && table[i][j] != 1.0) {
+			break;
+		}
+
+		if (i == k && table[i][j] == 0)
+			basic_variables[j] = true;
+	}
+}
+
+cout << "Basisvariablen: " << endl;
+for (int i = 0; i < k + n; i++){
+	if (basic_variables[i] == true){
+		cout << "X" << i + 1;
+		if (i != k + n - 1) cout << ", ";
+	}
+
+}
+cout << endl;
+
+}
+void output_table(double ** table, int k, int n){
+	//outputting names of columns
+	cout.precision(4);
+	for (int j = 0; j < k + n; j++) {
+		cout << "X" << j + 1 << "\t";
+	}
+	cout << "RS" << "\t" << "Q" << endl;
+
+	for (int i = 0; i < k + 1; i++) {
+		for (int j = 0; j < k + n + 2; j++) {
+			cout << table[i][j] << "\t";
+		}
+		cout << endl;
+	}
+
+
+}
+
+
 bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows){
 	for (int i = 0; i < number_of_columns - 2; i++) {
 		if (table[number_of_rows-1][i] > 0)
@@ -305,23 +355,23 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 		table[i][k + n + 1] = 0;
 	}
 
-	
-	cout << "Ausgangstableau:" << endl;
-	//outputting names of columns
-	for (int j = 0; j < k + n; j++) {
-		cout << "X" << j+1 << "\t";
-	}
-	cout << "RS" << "\t" << "Q" << endl;
+	//filling up basic_table
 
 	for (int i = 0; i < k + 1; i++) {
 		for (int j = 0; j < k + n + 2; j++) {
 			basis_table[i][j] = table[i][j];
-			cout << table[i][j] << "\t";
 		}
-		cout << endl;
 	}
 
+	
+	cout << "Ausgangstableau:" << endl;
 
+	output_table(table, k, n);
+
+	output_basic_vars(table, k, n);
+
+	cout << "RS steht die \"rechte Seite\" des (urspruenglichen) Gleichungssystems." << endl;
+	cout << endl;
 	//----BEGIN CALCULATION-----
 
 	cout.precision(4);
@@ -330,9 +380,12 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 	int number_of_rows = k + 1;
 	int number_of_columns = k + n + 2;
 	int index_quotient_column = number_of_columns - 1;
+	int index_rechte_seite_column = number_of_columns - 2;
 
 	if (show_log) cout << "number_of_rows: " << number_of_rows << endl;
 	if (show_log) cout << "number_of_columns: " << number_of_columns << endl;
+
+	int iteration_number = 1;
 
 	//find the highest number (without "-") in the last row OR find pivotcolumn
 do{
@@ -351,8 +404,9 @@ do{
 			}
 	}
 
-	cout << "The highest number (without \" - \") is :" << temp_highest << " at index " << index_pivot_column << endl;
-
+	cout << "Die groesste positive Zahl in der ZF-Spalte ist " << temp_highest << endl;
+	cout << "Spalte Nummer " << index_pivot_column+1 << " ist die Pivotspalte" << endl;
+	cout << endl;
 	//calculate Quotient
 
 	cout << "Kalkuliere Quotient" << endl;
@@ -365,19 +419,8 @@ do{
 			table[i][index_quotient_column] = -1;
 	}
 
-	cout << "Tableau nach Kalkulation:" << endl;
-	//outputting names of columns
-	for (int j = 0; j < k + n; j++) {
-		cout << "X" << j + 1 << "\t";
-	}
-	cout << "RS" << "\t" << "Q" << endl;
 
-	for (int i = 0; i < k + 1; i++) {
-		for (int j = 0; j < k + n + 2; j++) 
-			cout << table[i][j] << "\t";
-		
-		cout << endl;
-	}
+	
 
 
 
@@ -400,11 +443,51 @@ do{
 			}
 	}
 
-	cout << "The smallest quotient number is " << temp_smallest << " at index " << index_pivot_row << endl;
 
+	cout << "Tableau nach Kalkulation (der kleinste Quotien ist mit >*< hervorgehoben):" << endl;
+
+
+	for (int j = 0; j < k + n; j++) {
+		cout << "X" << j + 1 << "\t";
+	}
+	cout << "RS" << "\t" << "Q" << endl;
+
+	for (int i = 0; i < number_of_rows; i++) {
+		for (int j = 0; j < number_of_columns; j++) {
+			if (j == index_quotient_column && table[i][j] == temp_smallest)
+				cout << ">" << table[i][j] << "<" << "\t";
+			else
+				cout << table[i][j] << "\t";
+
+		}
+		cout << endl;
+	}
+
+	cout << endl;
+
+	cout << "Jetzt kann man das Pivotelement bestimmen. (ist mit >*< hervorgehoben)" << endl;
+
+	for (int j = 0; j < k + n; j++) {
+		cout << "X" << j + 1 << "\t";
+	}
+	cout << "RS" << "\t" << "Q" << endl;
+
+	for (int i = 0; i < number_of_rows; i++) {
+		for (int j = 0; j < number_of_columns; j++) {
+			if (index_pivot_row == i && index_pivot_column == j)
+				cout << ">" << table[i][j] << "<" << "\t";
+			else
+				cout << table[i][j] << "\t";
+
+		}
+		cout << endl;
+	}
+
+
+	cout << endl;
 	//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
 
-	cout << "Deviding each element in the row " << index_pivot_row << " by " << table[index_pivot_row][index_pivot_column] << endl;
+	cout << "Dividiere alle Werte in der Pivotspalte " << index_pivot_row+1 << " durch das Pivotelement mit Wert " << table[index_pivot_row][index_pivot_column] << endl;
 
 	double temp_dev = table[index_pivot_row][index_pivot_column];
 
@@ -416,15 +499,12 @@ do{
 		table[index_pivot_row][i] /= temp_dev;
 	}
 
-	cout << "Results after devision: " << endl;
 
-	for (int i = 0; i < number_of_columns - 1; i++) {
-		cout << table[index_pivot_row][i] << "\t";
-	}
+	output_table(table, k, n);
 
 	cout << endl;
 
-	cout << "Brinding all values in the pivot column to 0 (except of the pivot element itself)" << endl;
+	cout << "Mit Hilfe vom Gaussschen Eliminationsverfahren alle Werte in der Pivotspalte zu 0 bringen (ausser das Privotelement)" << endl;
 
 	for (int i = 0; i < number_of_rows; i++) {
 		if (i != index_pivot_row && table[i][index_pivot_column] != 0){
@@ -436,30 +516,32 @@ do{
 
 	}
 
+	cout << "Das Tableu nachdem:" << endl;
 
+	output_table(table, k, n);
+
+	cout << endl;
 
 	//testing tabelle
-	cout << "Outputting the whole table after an iteration" << endl;
+	cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
 	//cout.precision(4);
-	for (int i = 0; i < k + 1; i++) {//zeilen
-		for (int j = 0; j < k + n + 2; j++) {//spalten
-			cout << table[i][j] << "\t";
-		}
-		cout << endl;
-	}
 
-	cout << "hasPositiveValues(table, number_of_columns, number_of_rows) returned: " << hasPositiveValues(table, number_of_columns, number_of_rows) << endl;
+	output_table(table, k, n);
+
+	output_basic_vars(table, k, n);
+
+	if (show_log) cout << "hasPositiveValues(table, number_of_columns, number_of_rows) returned: " << hasPositiveValues(table, number_of_columns, number_of_rows) << endl;
 
 }while (hasPositiveValues(table, number_of_columns, number_of_rows));
 
 
 
-
+	double* results_first = new double[n];
 {
 
-	double* results = new double[n];
+	
 	for (int i = 0; i < n; i++){
-		results[i] = 0;
+		results_first[i] = 0;
 	}
 	int results_counter = 0;
 
@@ -475,7 +557,7 @@ do{
 			}
 		}
 		if (not_only_zeros_and_ONE != true && row_index_where_ONE_was_found >= 0){
-			results[results_counter++] = table[row_index_where_ONE_was_found][number_of_columns - 2];
+			results_first[results_counter++] = table[row_index_where_ONE_was_found][number_of_columns - 2];
 		}
 		else
 			results_counter++;
@@ -484,15 +566,17 @@ do{
 
 	//results
 
-	cout << endl << "First optimal solution. Final results: " << endl;
+	cout << endl << "Eine optimale Loesung ist gefunden! Die Werte sind: " << endl;
 	for (int i = 0; i < n; i++) {
-		cout << "x" << i + 1 << " = " << results[i] << ", ";
+		cout << "x" << i + 1 << " = " << results_first[i] << ", ";
 	}
 	cout << endl << endl;
-
+	cout.precision(4);
+	cout << "Somit hat die Zielfunktion den Wert " << table[number_of_rows-1][index_rechte_seite_column] * (-1) << endl;
+	
 }
 
-
+	cout << endl;
 
 
 
@@ -521,20 +605,10 @@ do{
 		}
 	}
 
-	cout << "Outputting basic and non-basic variables" << endl;
-	for (int i = 0; i < k + n; i++){
-		if (basic_variables[i] == false) 
-			cout << "X" << i+1 << " is non-basic";
-		else 
-			cout << "X" << i+1 << " is basic";
-
-		cout << endl;
-	}
-
 
 	///////////////////////////////////////////////////////////////
 	//begin of testing if a non-basic variable has 0 in Zielfunktion
-	cout << "Testing if there are multiple solutions" << endl;
+	if (show_log) cout << "Testing if there are multiple solutions" << endl;
 
 	int *index_column_another_solution = nullptr;
 
@@ -547,10 +621,10 @@ do{
 	cout << endl;
 
 	if (index_column_another_solution == nullptr)
-		cout << "This lp has only one solution" << endl;
+		cout << "Dieses LP hat nur eine Loesung." << endl;
 	else{
-		cout << "This lp has multiple solutions" << endl << 
-			"x" << *index_column_another_solution+1 << " can become a basic variable without affecting functions results" << endl;
+		cout << "Dieses LP hat mehrere Loesungen!" << endl << 
+			"x" << *index_column_another_solution+1 << " kann Basisbariable werden, ohne den Zielfunktionswert zu benachteiligen" << endl;
 
 		/////////////////////////////////////////////////////////
 		//calculate the coordinates of the new point
@@ -560,6 +634,8 @@ do{
 
 		//calculate Quotient
 
+		cout << "Kalkuliere Quotient" << endl;
+
 		for (int i = 0; i < number_of_rows - 1; i++) {
 			if (table[i][*index_column_another_solution] != 0){
 				table[i][index_quotient_column] = table[i][number_of_columns - 2] / table[i][*index_column_another_solution];
@@ -567,14 +643,9 @@ do{
 			else
 				table[i][index_quotient_column] = -1;
 		}
-		cout << "Quotient: " << endl;
 
-		for (int i = 0; i < number_of_rows - 1; i++) {
 
-			cout << table[i][index_quotient_column] << "\t";
 
-		}
-		cout << endl;
 
 
 
@@ -597,29 +668,51 @@ do{
 				}
 		}
 
-		cout << "The smallest quotient number is " << temp_smallest << " at index " << index_pivot_row << endl;
+
+		cout << "Tableau nach Kalkulation (der kleinste Quotien ist mit >*< hervorgehoben):" << endl;
 
 
+		for (int j = 0; j < k + n; j++) {
+			cout << "X" << j + 1 << "\t";
+		}
+		cout << "RS" << "\t" << "Q" << endl;
+
+		for (int i = 0; i < number_of_rows; i++) {
+			for (int j = 0; j < number_of_columns; j++) {
+				if (j == index_quotient_column && table[i][j] == temp_smallest)
+					cout << ">" << table[i][j] << "<" << "\t";
+				else
+					cout << table[i][j] << "\t";
+
+			}
+			cout << endl;
+		}
+
+		cout << endl;
+
+		cout << "Jetzt kann man das Pivotelement bestimmen. (ist mit >*< hervorgehoben)" << endl;
+
+		for (int j = 0; j < k + n; j++) {
+			cout << "X" << j + 1 << "\t";
+		}
+		cout << "RS" << "\t" << "Q" << endl;
+
+		for (int i = 0; i < number_of_rows; i++) {
+			for (int j = 0; j < number_of_columns; j++) {
+				if (index_pivot_row == i && *index_column_another_solution == j)
+					cout << ">" << table[i][j] << "<" << "\t";
+				else
+					cout << table[i][j] << "\t";
+
+			}
+			cout << endl;
+		}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		cout << endl;
 		//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
 
-		cout << "Deviding each element in the row " << index_pivot_row << " by " << table[index_pivot_row][*index_column_another_solution] << endl;
+		cout << "Dividiere alle Werte in der Pivotspalte " << index_pivot_row + 1 << " durch das Pivotelement mit Wert " << table[index_pivot_row][*index_column_another_solution] << endl;
 
 		double temp_dev = table[index_pivot_row][*index_column_another_solution];
 
@@ -631,15 +724,12 @@ do{
 			table[index_pivot_row][i] /= temp_dev;
 		}
 
-		cout << "Results after devision: " << endl;
 
-		for (int i = 0; i < number_of_columns - 1; i++) {
-			cout << table[index_pivot_row][i] << "\t";
-		}
+		output_table(table, k, n);
 
 		cout << endl;
 
-		cout << "Brinding all values in the pivot column to 0 (except of the pivot element itself)" << endl;
+		cout << "Mit Hilfe vom Gaussschen Eliminationsverfahren alle Werte in der Pivotspalte zu 0 bringen (ausser das Privotelement)" << endl;
 
 		for (int i = 0; i < number_of_rows; i++) {
 			if (i != index_pivot_row && table[i][*index_column_another_solution] != 0){
@@ -651,17 +741,19 @@ do{
 
 		}
 
+		cout << "Das Tableu nachdem:" << endl;
 
+		output_table(table, k, n);
+
+		cout << endl;
 
 		//testing tabelle
-		cout << "Outputting the whole table after an iteration" << endl;
-		cout.precision(3);
-		for (int i = 0; i < k + 1; i++) {//zeilen
-			for (int j = 0; j < k + n + 2; j++) {//spalten
-				cout << table[i][j] << "\t";
-			}
-			cout << endl;
-		}
+		cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
+		//cout.precision(4);
+
+		output_table(table, k, n);
+
+		output_basic_vars(table, k, n);
 
 
 
@@ -672,41 +764,75 @@ do{
 		//code from above END
 
 
+		double* results_second = new double[n];
+		for (int i = 0; i < n; i++){
+			results_second[i] = 0;
+		}
+		int results_counter = 0;
+
+		for (int i = 0; i < n; i++) {
+			int row_index_where_ONE_was_found = -1;
+			bool not_only_zeros_and_ONE = false;
+			for (int j = 0; j < number_of_rows; j++) {
+				if (table[j][i] == 1){
+					row_index_where_ONE_was_found = j;
+				}
+				else if (table[j][i] != 0){
+					not_only_zeros_and_ONE = true;
+				}
+			}
+			if (not_only_zeros_and_ONE != true && row_index_where_ONE_was_found >= 0){
+				results_second[results_counter++] = table[row_index_where_ONE_was_found][number_of_columns - 2];
+			}
+			else
+				results_counter++;
+		}
+
+
+		cout << endl << "Die zweite optimale Loesung ist gefunden! Folgender Ausdruck zeigt alle moeglichen Loesungen: " << endl;
+
+		cout << "(";
+
+		for (int i = 0; i < n; i++){
+			cout << "x" << i + 1;
+			if (i != n - 1) cout << ", ";
+		}
+
+		cout << ") = delta * ";
+
+		cout << "(";
+
+		for (int i = 0; i < n; i++){
+			cout << results_first[i];
+			if (i != n - 1) cout << ", ";
+		}
+
+		cout << ") + (1 - delta) * (";
+
+		for (int i = 0; i < n; i++){
+			cout << results_second[i];
+			if (i != n - 1) cout << ", ";
+		}
+
+		cout << "), wo delta beliebigen Wert innerhalb des Intervals [0, 1] hat" << endl;
+		
+
+		cout << endl;
+		cout << "Die Zielfunktion wird immer den Wert " << table[number_of_rows - 1][index_rechte_seite_column] * (-1) << " ermitteln." << endl;
+
+
+
 	}
 		
 
 
-
-	double* results = new double[n];
-	for (int i = 0; i < n; i++){
-		results[i] = 0;
-	}
-	int results_counter = 0;
-
-	for (int i = 0; i < n; i++) {
-		int row_index_where_ONE_was_found = -1;
-		bool not_only_zeros_and_ONE = false;
-		for (int j = 0; j < number_of_rows; j++) {
-			if (table[j][i] == 1){
-				row_index_where_ONE_was_found = j;
-			}
-			else if (table[j][i] != 0){
-				not_only_zeros_and_ONE = true;
-			}
-		}
-		if (not_only_zeros_and_ONE != true && row_index_where_ONE_was_found >= 0){
-			results[results_counter++] = table[row_index_where_ONE_was_found][number_of_columns - 2];
-		}
-		else
-			results_counter++;
-	}
 
 	//sensitivity
 
 	//sensAnalysis(n, k, basis_table, table, c);
 
 
-	return results;
+	return results_first;
 }
 
 
@@ -716,16 +842,18 @@ int _tmain(int argc, _TCHAR* argv[]){
 	ifstream file("testfile.txt");
 	int n, k; // n Zeilen, k Spalten
 	file >> n >> k;
-	cout << "n: " << n << ", k: " << k << endl;
+	if (show_log) cout << "n: " << n << ", k: " << k << endl;
 
 	double *vector_c = new double[n];
 	for (int i = 0; i < n; i++) {
 		file >> vector_c[i];
 	}
 	//testing vector_c
-	cout << "vector_c" << endl;
-	for (int i = 0; i < n; i++) {
-		cout << vector_c[i] << endl;
+	if (show_log){
+		cout << "vector_c" << endl;
+		for (int i = 0; i < n; i++) {
+			cout << vector_c[i] << endl;
+		}
 	}
 
 	double** matrix = new double*[k];//Spalten
@@ -740,26 +868,34 @@ int _tmain(int argc, _TCHAR* argv[]){
 	}
 
 	//testing matrix
-	cout << "matrix" << endl;
-	for (int i = 0; i < k; i++) {
-		for (int j = 0; j < n; j++) {
-			cout << matrix[i][j] << endl;
+	if (show_log){
+		cout << "matrix" << endl;
+		for (int i = 0; i < k; i++) {
+			for (int j = 0; j < n; j++) {
+				cout << matrix[i][j] << endl;
+			}
+		}
+	}
+	
+
+
+	//testing vector_b
+	if (show_log){
+		cout << "vector_b" << endl;
+		for (int i = 0; i < k; i++) {
+			cout << vector_b[i] << endl;
 		}
 	}
 
 
-	//testing vector_b
-	cout << "vector_b" << endl;
-	for (int i = 0; i < k; i++) {
-		cout << vector_b[i] << endl;
-	}
+	
 
 
 	//results
 
 	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
 
-	cout << endl << "Second. Final results: " << endl;
+	cout << endl << "Die optimale Loesung ist: " << endl;
 	for (int i = 0; i < n; i++) {
 		cout << "x" << i+1 << " = " << results[i] << ", ";
 	}
