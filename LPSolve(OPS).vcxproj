@@ -19,17 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-<<<<<<< HEAD
-    <PlatformToolset>v120_xp</PlatformToolset>
-=======
->>>>>>> 3ed8ce97f39d7023e67e902db4fe008fa8ddcb94
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -80,7 +76,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="Eigen\CMakeLists.txt" />
     <Text Include="ReadMe.txt" />
     <Text Include="testfile.txt" />
   </ItemGroup>
@@ -96,40 +91,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Eigen\Array" />
-    <None Include="Eigen\Cholesky" />
-    <None Include="Eigen\CholmodSupport" />
-    <None Include="Eigen\Core" />
-    <None Include="Eigen\Dense" />
-    <None Include="Eigen\Eigen" />
-    <None Include="Eigen\Eigen2Support" />
-    <None Include="Eigen\Eigenvalues" />
-    <None Include="Eigen\Geometry" />
-    <None Include="Eigen\Householder" />
-    <None Include="Eigen\IterativeLinearSolvers" />
-    <None Include="Eigen\Jacobi" />
-    <None Include="Eigen\LeastSquares" />
-    <None Include="Eigen\LU" />
-    <None Include="Eigen\MetisSupport" />
-    <None Include="Eigen\OrderingMethods" />
-    <None Include="Eigen\PardisoSupport" />
-    <None Include="Eigen\PaStiXSupport" />
-    <None Include="Eigen\QR" />
-    <None Include="Eigen\QtAlignedMalloc" />
-    <None Include="Eigen\Sparse" />
-    <None Include="Eigen\SparseCholesky" />
-    <None Include="Eigen\SparseCore" />
-    <None Include="Eigen\SparseLU" />
-    <None Include="Eigen\SparseQR" />
-    <None Include="Eigen\SPQRSupport" />
-    <None Include="Eigen\StdDeque" />
-    <None Include="Eigen\StdList" />
-    <None Include="Eigen\StdVector" />
-    <None Include="Eigen\SuperLUSupport" />
-    <None Include="Eigen\SVD" />
-    <None Include="Eigen\UmfPackSupport" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
