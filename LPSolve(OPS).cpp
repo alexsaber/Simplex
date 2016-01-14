@@ -427,8 +427,8 @@ do{
 	//testing tabelle
 	cout << "Outputting the whole table after an iteration" << endl;
 	//cout.precision(4);
-	for (int i = 0; i < k + 1; i++) {
-		for (int j = 0; j < k + n + 2; j++) {
+	for (int i = 0; i < k + 1; i++) {//zeilen
+		for (int j = 0; j < k + n + 2; j++) {//spalten
 			cout << table[i][j] << "\t";
 		}
 		cout << endl;
@@ -437,6 +437,58 @@ do{
 	cout << "hasPositiveValues(table, number_of_columns, number_of_rows) returned: " << hasPositiveValues(table, number_of_columns, number_of_rows) << endl;
 
 }while (hasPositiveValues(table, number_of_columns, number_of_rows));
+
+
+	//////////////////////////////////////////////
+	//finding basic and non-basic variables
+	bool *basic_variables = new bool[k + n];
+	for (int i = 0; i < k + n; i++){
+		basic_variables[i] = false;
+	}
+
+
+	for (int j = 0; j < k + n; j++) {//spalten
+		for (int i = 0; i < k + 1; i++) {//zeilen
+			if (table[i][j] != 0.0 && table[i][j] != 1.0) {
+				break;
+			}
+				
+			if (i == k && table[i][j] == 0) 
+				basic_variables[j] = true;	
+		}
+	}
+
+	cout << "Outputting basic and non-basic variables" << endl;
+	for (int i = 0; i < k + n; i++){
+		if (basic_variables[i] == false) 
+			cout << "X" << i+1 << " is non-basic";
+		else 
+			cout << "X" << i+1 << " is basic";
+
+		cout << endl;
+	}
+
+
+	///////////////////////////////////////////////////////////////
+	//begin of testing if a non-basic variable has 0 in Zielfunktion
+	cout << "Testing if there are multiple solutions" << endl;
+
+	int *index_column_another_solution = nullptr;
+
+	for (int i = 0; i < k + n; i++){
+		if (basic_variables[i] == true && (table[k][i] == 0)){
+			index_column_another_solution = new int;
+			*index_column_another_solution = i;
+			
+		}
+	}
+	cout << endl;
+
+	if (index_column_another_solution == nullptr)
+		cout << "This lp has only one solution" << endl;
+	else
+		cout << "This lp has multiple solutions" << endl;
+
 
 
 	double* results = new double[n];
@@ -465,7 +517,7 @@ do{
 
 	//sensitivity
 
-	sensAnalysis(n, k, basis_table, table, c);
+	//sensAnalysis(n, k, basis_table, table, c);
 
 
 	return results;
