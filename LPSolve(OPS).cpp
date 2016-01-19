@@ -48,7 +48,7 @@ for (int i = 0; i < k + n; i++){
 cout << "</b></div>"<< endl;
 
 }
-void output_table(double ** table, int k, int n, string table_name){
+void output_table(double ** table, int k, int n, string table_name, int row_to_highlight = -1){
 
 
 	//outputting names of columns
@@ -78,7 +78,10 @@ void output_table(double ** table, int k, int n, string table_name){
 	for (int i = 0; i < k + 1; i++) {
 		cout << "<tr>";
 		for (int j = 0; j < k + n + 2; j++) {
-			cout  << "<td>" <<  table[i][j] << "</td>\n";
+			if (row_to_highlight != -1 && i == row_to_highlight)
+				cout << "<td style = 'background-color: #ccf3ff;'>" << table[i][j] << "</td>\n";
+			else
+				cout  << "<td>" <<  table[i][j] << "</td>\n";
 		}
 		cout << " </tr>";
 
@@ -502,7 +505,7 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 			if (j == n - 1)
 				cout << "x" << i + 1 << "*" << table[i][j];
 			if (j == n)
-				cout << " <= " << table[i][j + n];
+				cout << " <= " << table[i][j + k];// +k because I want to skip all slack variables, it is always k 
 		}
 
 	}
@@ -551,8 +554,8 @@ do{
 			}
 	}
 	cout << "<div class = 'well'>" << endl;
-	cout << "Die groesste positive Zahl in der ZF-Spalte ist " << temp_highest << "<br>" << endl;
-	cout << "Spalte Nummer " << index_pivot_column + 1 << " ist die Pivotspalte" << "<br>" << endl;
+	cout << "Die groesste positive Zahl in der ZF-Spalte ist <b>" << temp_highest << "</b><br>" << endl;
+	cout << "Spalte <b> Nummer " << index_pivot_column + 1 << " ist die Pivotspalte" << " </b><br>" << endl;
 	cout << endl;
 	//calculate Quotient
 
@@ -569,7 +572,7 @@ do{
 	}
 
 
-	
+
 
 
 
@@ -644,8 +647,10 @@ do{
 	for (int i = 0; i < k + 1; i++) {
 		cout << "<tr>";
 		for (int j = 0; j < k + n + 2; j++) {
-			if (j == index_quotient_column && table[i][j] == temp_smallest)
-				cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+			if ((i == index_pivot_row && table[i][j] == temp_smallest) || (j == index_pivot_column && table[i][j] == temp_highest))
+				cout << "<td style = 'background-color: #ccf3ff;' ><font color='red'>" << table[i][j] << "</font></td>\n";
+			else if (i == index_pivot_row || j == index_pivot_column)
+				cout << "<td style = 'background-color: #ccf3ff;'>" << table[i][j] << "</td>\n";
 			else
 				cout << "<td>" << table[i][j] << "</td>\n";
 			
@@ -727,9 +732,12 @@ do{
 		cout << "<tr>";
 		for (int j = 0; j < k + n + 2; j++) {
 			if (index_pivot_row == i && index_pivot_column == j)
-				cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+				cout << "<td style = 'background-color: #ccf3ff;' ><font color='red'>" << table[i][j] << "</font></td>\n";
+			else if (i == index_pivot_row || j == index_pivot_column)
+				cout << "<td style = 'background-color: #ccf3ff;'>" << table[i][j] << "</td>\n";
 			else
 				cout << "<td>" << table[i][j] << "</td>\n";
+
 
 		}
 		cout << " </tr>";
@@ -760,7 +768,7 @@ do{
 	cout << endl;
 	//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
 	cout << "<div class = 'well'>" << endl;
-	cout << "Dividiere alle Werte in der Pivotspalte " << index_pivot_row+1 << " durch das Pivotelement mit Wert " << table[index_pivot_row][index_pivot_column] << endl;
+	cout << "Dividiere alle Werte <b> in der Pivotspalte " << index_pivot_row+1 << " </b> durch das Pivotelement <b> mit Wert " << table[index_pivot_row][index_pivot_column] << "</b>" << endl;
 	cout << "</div>" << endl;
 	double temp_dev = table[index_pivot_row][index_pivot_column];
 
@@ -773,7 +781,7 @@ do{
 	}
 
 
-	output_table(table, k, n, "Die Tabelle nach der Division");
+	output_table(table, k, n, "Die Tabelle nach der Division", index_pivot_row);
 
 	cout << endl;
 	cout << "<div class = 'well'>" << endl;
@@ -791,7 +799,7 @@ do{
 
 
 
-	output_table(table, k, n, "Das Tableu nachdem:");
+	//output_table(table, k, n, "Das Tableu nachdem:");
 
 	cout << endl;
 
@@ -801,7 +809,8 @@ do{
 
 	string interation_first = "Die Tabelle nach der Iteration Nr. " + std::to_string(iteration_number);
 	iteration_number++;
-	output_table(table, k, n, interation_first);
+	//n -- index for last row with Zielfunktion
+	output_table(table, k, n, interation_first, n);
 
 	output_basic_vars(table, k, n);
 
@@ -1011,9 +1020,13 @@ cout << "</h4></div>" << endl;
 			cout << "<tr>";
 			for (int j = 0; j < k + n + 2; j++) {
 				if (j == index_quotient_column && table[i][j] == temp_smallest)
-					cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+					cout << "<td style = 'background-color: #ccf3ff;' ><font color='red'>" << table[i][j] << "</font></td>\n";
+				else if (i == index_pivot_row || j == *index_column_another_solution)
+					cout << "<td style = 'background-color: #ccf3ff;'>" << table[i][j] << "</td>\n";
 				else
 					cout << "<td>" << table[i][j] << "</td>\n";
+
+
 
 			}
 			cout << " </tr>";
@@ -1093,7 +1106,9 @@ cout << "</h4></div>" << endl;
 			cout << "<tr>";
 			for (int j = 0; j < k + n + 2; j++) {
 				if (index_pivot_row == i && *index_column_another_solution == j)
-					cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+					cout << "<td style = 'background-color: #ccf3ff;' ><font color='red'>" << table[i][j] << "</font></td>\n";
+				else if (i == index_pivot_row || j == *index_column_another_solution)
+					cout << "<td style = 'background-color: #ccf3ff;'>" << table[i][j] << "</td>\n";
 				else
 					cout << "<td>" << table[i][j] << "</td>\n";
 
@@ -1126,7 +1141,7 @@ cout << "</h4></div>" << endl;
 		cout << endl;
 		//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
 		cout << "<div class = 'well'>" << endl;
-		cout << "Dividiere alle Werte in der Pivotspalte " << index_pivot_row + 1 << " durch das Pivotelement mit Wert " << table[index_pivot_row][*index_column_another_solution] << endl;
+		cout << "Dividiere alle Werte <b> in der Pivotspalte " << index_pivot_row + 1 << " </b> durch das Pivotelement <b> mit Wert " << table[index_pivot_row][*index_column_another_solution] << "</b>" << endl;
 		cout << "</div>" << endl;
 		double temp_dev = table[index_pivot_row][*index_column_another_solution];
 
@@ -1139,7 +1154,7 @@ cout << "</h4></div>" << endl;
 		}
 
 
-		output_table(table, k, n, "Die Tabelle nach der Division");
+		output_table(table, k, n, "Die Tabelle nach der Division", index_pivot_row);
 
 		cout << endl;
 		cout << "<div class = 'well'>" << endl;
@@ -1157,7 +1172,7 @@ cout << "</h4></div>" << endl;
 
 
 
-		output_table(table, k, n, "Das Tableu nachdem:");
+		//output_table(table, k, n, "Das Tableu nachdem:");
 
 		cout << endl;
 
@@ -1165,7 +1180,7 @@ cout << "</h4></div>" << endl;
 		//cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
 		//cout.precision(4);
 
-		output_table(table, k, n, "Die Tabelle nach der Iteration");
+		output_table(table, k, n, "Die Tabelle nach der Iteration", n);
 
 		output_basic_vars(table, k, n);
 
