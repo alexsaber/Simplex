@@ -54,10 +54,14 @@ void output_table(double ** table, int k, int n, string table_name){
 	//outputting names of columns
 	cout.precision(4);
 
-	cout << "<div class='container'>" <<
-		"<h4>" << table_name << "</h4>" <<
-		"<table class='table table-bordered'>" <<
-		" <thead>"
+	cout << "<div class='container'>" <<
+
+		"<h4>" << table_name << "</h4>" <<
+
+		"<table class='table table-bordered'>" <<
+
+		" <thead>"
+
 		"<tr>";
 
 	for (int j = 0; j < k + n; j++) {
@@ -66,22 +70,27 @@ void output_table(double ** table, int k, int n, string table_name){
 
 	cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
 
-	cout << "\n</tr>"		<< "\n</thead>"
-		<< "<tbody>";
+	cout << "\n</tr>"
+		<< "\n</thead>"
+		<< "<tbody>";
+
 
 	for (int i = 0; i < k + 1; i++) {
 		cout << "<tr>";
 		for (int j = 0; j < k + n + 2; j++) {
 			cout  << "<td>" <<  table[i][j] << "</td>\n";
 		}
-		cout << " </tr>";
+		cout << " </tr>";
+
 	}
 
 
 
 	cout <<
-		"</tbody>" <<
-		"</table>" <<
+		"</tbody>" <<
+
+		"</table>" <<
+
 		"</div>";
 
 
@@ -494,7 +503,8 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 				cout << "x" << i + 1 << "*" << table[i][j];
 			if (j == n)
 				cout << " <= " << table[i][j + n];
-		}
+		}
+
 	}
 	cout << "</b>";
 	//close div of first well
@@ -610,10 +620,14 @@ do{
 	//outputting names of columns
 	cout.precision(4);
 
-	cout << "<div class='container'>" <<
-		"<h4>" << "Tableau nach Kalkulation(der kleinste Quotient ist rot)" << "</h4>" <<
-		"<table class='table table-bordered'>" <<
-		" <thead>"
+	cout << "<div class='container'>" <<
+
+		"<h4>" << "Tableau nach Kalkulation(der kleinste Quotient ist rot)" << "</h4>" <<
+
+		"<table class='table table-bordered'>" <<
+
+		" <thead>"
+
 		"<tr>";
 
 	for (int j = 0; j < k + n; j++) {
@@ -622,8 +636,10 @@ do{
 
 	cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
 
-	cout << "\n</tr>"		<< "\n</thead>"
-		<< "<tbody>";
+	cout << "\n</tr>"
+		<< "\n</thead>"
+		<< "<tbody>";
+
 
 	for (int i = 0; i < k + 1; i++) {
 		cout << "<tr>";
@@ -634,14 +650,17 @@ do{
 				cout << "<td>" << table[i][j] << "</td>\n";
 			
 		}
-		cout << " </tr>";
+		cout << " </tr>";
+
 	}
 
 
 
 	cout <<
-		"</tbody>" <<
-		"</table>" <<
+		"</tbody>" <<
+
+		"</table>" <<
+
 		"</div>";
 
 
@@ -683,10 +702,14 @@ do{
 	//outputting names of columns
 	cout.precision(4);
 
-	cout << "<div class='container'>" <<
-		"<h4>" << "Das Pivotelement. (ist rot)" << "</h4>" <<
-		"<table class='table table-bordered'>" <<
-		" <thead>"
+	cout << "<div class='container'>" <<
+
+		"<h4>" << "Das Pivotelement. (ist rot)" << "</h4>" <<
+
+		"<table class='table table-bordered'>" <<
+
+		" <thead>"
+
 		"<tr>";
 
 	for (int j = 0; j < k + n; j++) {
@@ -695,8 +718,10 @@ do{
 
 	cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
 
-	cout << "\n</tr>"		<< "\n</thead>"
-		<< "<tbody>";
+	cout << "\n</tr>"
+		<< "\n</thead>"
+		<< "<tbody>";
+
 
 	for (int i = 0; i < k + 1; i++) {
 		cout << "<tr>";
@@ -707,14 +732,17 @@ do{
 				cout << "<td>" << table[i][j] << "</td>\n";
 
 		}
-		cout << " </tr>";
+		cout << " </tr>";
+
 	}
 
 
 
 	cout <<
-		"</tbody>" <<
-		"</table>" <<
+		"</tbody>" <<
+
+		"</table>" <<
+
 		"</div>";
 
 
@@ -958,10 +986,14 @@ cout << "</h4></div>" << endl;
 		//outputting names of columns
 		cout.precision(4);
 
-		cout << "<div class='container'>" <<
-			"<h4>" << "Tableau nach Kalkulation(der kleinste Quotient ist rot)" << "</h4>" <<
-			"<table class='table table-bordered'>" <<
-			" <thead>"
+		cout << "<div class='container'>" <<
+
+			"<h4>" << "Tableau nach Kalkulation(der kleinste Quotient ist rot)" << "</h4>" <<
+
+			"<table class='table table-bordered'>" <<
+
+			" <thead>"
+
 			"<tr>";
 
 		for (int j = 0; j < k + n; j++) {
@@ -970,8 +1002,10 @@ cout << "</h4></div>" << endl;
 
 		cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
 
-		cout << "\n</tr>"			<< "\n</thead>"
-			<< "<tbody>";
+		cout << "\n</tr>"
+			<< "\n</thead>"
+			<< "<tbody>";
+
 
 		for (int i = 0; i < k + 1; i++) {
 			cout << "<tr>";
@@ -982,14 +1016,17 @@ cout << "</h4></div>" << endl;
 					cout << "<td>" << table[i][j] << "</td>\n";
 
 			}
-			cout << " </tr>";
+			cout << " </tr>";
+
 		}
 
 
 
 		cout <<
-			"</tbody>" <<
-			"</table>" <<
+			"</tbody>" <<
+
+			"</table>" <<
+
 			"</div>";
 
 
@@ -1031,10 +1068,14 @@ cout << "</h4></div>" << endl;
 		//outputting names of columns
 		cout.precision(4);
 
-		cout << "<div class='container'>" <<
-			"<h4>" << "Das Pivotelement. (ist rot)" << "</h4>" <<
-			"<table class='table table-bordered'>" <<
-			" <thead>"
+		cout << "<div class='container'>" <<
+
+			"<h4>" << "Das Pivotelement. (ist rot)" << "</h4>" <<
+
+			"<table class='table table-bordered'>" <<
+
+			" <thead>"
+
 			"<tr>";
 
 		for (int j = 0; j < k + n; j++) {
@@ -1043,8 +1084,10 @@ cout << "</h4></div>" << endl;
 
 		cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
 
-		cout << "\n</tr>"			<< "\n</thead>"
-			<< "<tbody>";
+		cout << "\n</tr>"
+			<< "\n</thead>"
+			<< "<tbody>";
+
 
 		for (int i = 0; i < k + 1; i++) {
 			cout << "<tr>";
@@ -1055,14 +1098,17 @@ cout << "</h4></div>" << endl;
 					cout << "<td>" << table[i][j] << "</td>\n";
 
 			}
-			cout << " </tr>";
+			cout << " </tr>";
+
 		}
 
 
 
 		cout <<
-			"</tbody>" <<
-			"</table>" <<
+			"</tbody>" <<
+
+			"</table>" <<
+
 			"</div>";
 
 
@@ -1202,16 +1248,26 @@ cout << "</h4></div>" << endl;
 
 int main(int argc, char* argv[]){
 
-	cout << "<!DOCTYPE html>\n"
-		<< "<html lang='de'>\n"
-		<< "<head>\n"
-		<< "<title>Bootstrap Example</title>\n"
-		<< "<meta charset='utf-8'>\n"
-		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
-		<< "<link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>\n"
-		<< "<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>\n"
-		<< "<script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>\n"
-		<< "</head>\n"
+	cout << "<!DOCTYPE html>\n"
+
+		<< "<html lang='de'>\n"
+
+		<< "<head>\n"
+
+		<< "<title>Bootstrap Example</title>\n"
+
+		<< "<meta charset='utf-8'>\n"
+
+		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
+
+		<< "<link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>\n"
+
+		<< "<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>\n"
+
+		<< "<script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>\n"
+
+		<< "</head>\n"
+
 		<< "<body>\n"
 
 		<< "<div class='container'>\n" ;
@@ -1227,7 +1283,8 @@ int main(int argc, char* argv[]){
 
 		cout << "</div>";
 
-		cout << "</body>\n";
+		cout << "</body>\n";
+
 		cout << "</html>\n";
 
 		return 1;
@@ -1239,7 +1296,8 @@ int main(int argc, char* argv[]){
 
 		cout << "</div>";
 
-		cout << "</body>\n";
+		cout << "</body>\n";
+
 		cout << "</html>\n";
 
 		return 1;
@@ -1254,7 +1312,8 @@ int main(int argc, char* argv[]){
 
 		cout << "</div>";
 
-		cout << "</body>\n";
+		cout << "</body>\n";
+
 		cout << "</html>\n";
 
 		return 1;
@@ -1390,7 +1449,8 @@ int main(int argc, char* argv[]){
 
 			cout << "</div>";
 
-			cout << "</body>\n";
+			cout << "</body>\n";
+
 			cout << "</html>\n";
 
 			return 1;
@@ -1414,14 +1474,22 @@ int main(int argc, char* argv[]){
 
 	//system("pause");
 
-
-
-
-
-
-
-
-	cout << "</div> </body>\n";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	cout << "</div> </body>\n";
+
 	cout << "</html>\n";
 
 	return 0;
