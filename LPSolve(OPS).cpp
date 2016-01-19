@@ -161,52 +161,52 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 
 	cout << endl;
 
-	cout << "The Vectors a[i] are being computed." << endl;
-	cout << "Dependent on the position of the Basic-Variables." << endl;
-	cout << "The order is determent." << endl;
-	cout << "a[i]s: " << endl;
+	//cout << "The Vectors a[i] are being computed." << endl;
+	//cout << "Dependent on the position of the Basic-Variables." << endl;
+	//cout << "The order is determent." << endl;
+	//cout << "a[i]s: " << endl;
 	for (int i = 0; i < n+k; i++){
-		cout << "a" << i << " = [ ";
+		//cout << "a" << i << " = [ ";
 		for (int j = 0; j < k; j++){
-			a[j][i] = basis_matrix[j][i];
-			cout << a[j][i] << " ";
+			//a[j][i] = basis_matrix[j][i];
+			//cout << a[j][i] << " ";
 		}
-		cout << "]" << endl;
+		//cout << "]" << endl;
 	}
 
 	
-	cout << endl;
+	//cout << endl;
 
-	cout << "The Basic-Variables itself." << endl;
-	cout << "B: " << endl;
+	//cout << "The Basic-Variables itself." << endl;
+	//cout << "B: " << endl;
 	for (int i = 0; i < bv_count; i++){
 		for (int j = 0; j < bv_count; j++){
 			B(j,i) = a[j][bv[i]];
 		}
 	}
 
-	cout << B << endl;
+	//cout << B << endl;
 
-	cout << endl;
+	//cout << endl;
 
-	cout << "The invers of the Basic-Variables  is being computed." << endl;
+	//cout << "The invers of the Basic-Variables  is being computed." << endl;
 	Bi = B.inverse();
 	
-	cout << "The Non-Basic-Variables itself." << endl;
-	cout << "NBV: " << endl;
+	//cout << "The Non-Basic-Variables itself." << endl;
+	//cout << "NBV: " << endl;
 	for (int i = 0; i < nbv_count; i++){
 		for (int j = 0; j < bv_count; j++){
 			NB(j,i) = a[j][nbv[i]];
 		}
 	}
 
-	cout << NB << endl;	
+	//cout << NB << endl;	
 
-	cout << endl;
+	//cout << endl;
 
-	cout << "The constants of the basic variables (CB) as in vector_c." << endl;
-	cout << "The order is determent." << endl;
-	cout << "CB: " << endl;
+	//cout << "The constants of the basic variables (CB) as in vector_c." << endl;
+	//cout << "The order is determent." << endl;
+	//cout << "CB: " << endl;
 	for (int i = 0; i < bv_count; i ++){
 		if (bv[i] >= n){
 			cb(i,0) = 0.0;
@@ -214,17 +214,17 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			cb(i,0) = vector_c[bv[i]];
 		}
 	}
-	cout << " [ ";
+	//cout << " [ ";
 	for (int i = 0; i < bv_count; i++){
-		cout << cb(i,0) << " " ;
+		//cout << cb(i,0) << " " ;
 	}
-	cout << "]" << endl;	
+	//cout << "]" << endl;	
 
-	cout << endl;
+	//cout << endl;
 
-	cout << "The Constants of the non-basic-variables (CNBV) as in vector_c." << endl;
-	cout << "The order is determent." << endl;
-	cout << "CNBV: " << endl;
+	//cout << "The Constants of the non-basic-variables (CNBV) as in vector_c." << endl;
+	//cout << "The order is determent." << endl;
+	//cout << "CNBV: " << endl;
 	for (int i = 0; i < nbv_count; i ++){
 		if (nbv[i] >= n){
 			cnbv(i,0)= 0.0;
@@ -233,13 +233,13 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 		}
 	}
 
-	cout << " [ ";
+	//cout << " [ ";
 	for (int i = 0; i < nbv_count; i++){
-		cout << cnbv(i,0) << " " ;
+		//cout << cnbv(i,0) << " " ;
 	}
-	cout << "]" << endl;	
+	//cout << "]" << endl;	
 
-	cout << endl;
+	//cout << endl;
 
 	//Changing the Object function coefficiant of a basic variable
 	double cbv_dot_Biaj = 0.0;
@@ -281,11 +281,11 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			delta += 1;
 		};
 		
-		cout << "The Coefficiants of BV" << i << " can be added up by a maximum of  " << delta << "." << endl;
+		cout << "Der Koeffizient der Basisvariable " << i << " befindet sich in einer Reichweite von " << delta << "." << "<br>" << endl;
 		
 	}
 
-	cout << endl;
+	cout << "<br>" << endl;
 
 	//Changing the Object function coefficiant of a non basic variable
 	cnbv0 = 0.0;
@@ -322,11 +322,11 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 			delta += 1;
 		};
 		
-		cout << "The Coefficiants of NBV" << i << " can be added up by a maximum of  " << delta << "." << endl;
+		cout << "Der Koeffizient der Nichtbasisvariable " << i << " befindet sich in einer Reichweite von " << delta << "." << "<br>" << endl;
 		
 	}
 
-	cout << endl;
+	cout << "<br>" << endl;
 	
 	//Adding a new variable or activity (20,[1,2,3,4])
 	bool test = false;
@@ -353,22 +353,22 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	cnbv_dot_Biaj += cnbv0*temp[j];
 	}
 	if (cnbv_dot_Biaj - 20 > 0){
-		cout << "Adding a new activity <20> with Recources" << endl << " [ ";
+		cout << "Das hinzufuegen einer neuen Aktivitaet <20> mit den Ressourcen" << endl << " [ ";
 		for (int i = 0; i<k;i++){
 			cout << i+1 << " ";
 		}
-		cout << "]" << endl << "is NOT Reasonable." << endl ;
+		cout << "]" << endl << "ist NICHT sinnvoll." << "<br>" <<endl ;
 	}
 	else{
-		cout << "Adding a new activity <20> with Recources" << endl << " [ ";
+		cout << "Das hinzufuegen einer neuen Aktivitaet <20> mit den Ressourcen" << endl << " [ ";
 		for (int i = 0; i<k;i++){
 			cout << i+1 << " ";
 			test = true;
 		}
-		cout << "]" << endl << "is REASONABLE." << endl ;
+		cout << "]" << endl << "ist SINNVOLL." << "<br>" <<endl ;
 	}
 
-	cout << endl;
+	cout << "<br>" << endl;
 	
 	//Testen welche Aktivität sinnvoll wäre
 if (!test){
@@ -376,13 +376,13 @@ if (!test){
 	while (cnbv_dot_Biaj - delta > 0 && delta != 0.0){
 		delta += 1;
 	}
-	cout << "Adding a new activity <" << delta << "> with Recources" << endl << " [ ";
+	cout << "Das hinzufuegen einer Aktivitaet <" << delta << "> mit den Ressourcen" << endl << " [ ";
 	for (int i = 0; i<k;i++){
 		cout << i+1 << " ";
 	}
-	cout << "]" << endl << "is REASONABLE." << endl ;
+	cout << "]" << endl << "ist SINNVOLL." << "<br>" << endl ;
 
-	cout << endl;
+	cout << "<br>" << endl;
 
 	//Testen welche Resourcen sinnvoll wären
 	int a2 = 0;
@@ -421,11 +421,11 @@ if (!test){
 			cnbv_dot_Biaj += cnbv0*temp[j];
 		}
 	}
-	cout << "To add the activity <20> one would have to add the resource" << endl << " [ ";
+	cout << "Um eine neue Aktivitaet <20> hinzuzufuegen muessen die Ressourcen" << endl << " [ ";
 	for (int i = 0; i < bv_count; i++){
 		cout << temp1[i] << " ";
 	}
-	cout << "]." << endl;
+	cout << "] verwendet werden." << "<br>" << endl;
 }
 	cout << "</div>" << endl;
 }
@@ -1269,7 +1269,7 @@ int main(int argc, char* argv[]){
 
 		<< "<head>\n"
 
-		<< "<title>Bootstrap Example</title>\n"
+		<< "<title>Simplex Output</title>\n"
 
 		<< "<meta charset='utf-8'>\n"
 
