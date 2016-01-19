@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 
 #include "Funktion.h"
 #include "Eigen/Dense"
@@ -32,8 +33,10 @@ for (int j = 0; j < k + n; j++) {//spalten
 			basic_variables[j] = true;
 	}
 }
+cout << "<div class = 'well'>" << endl;
 
-cout << "Basisvariablen: " << endl;
+cout << "Basisvariablen: <b>" << endl;
+
 for (int i = 0; i < k + n; i++){
 	if (basic_variables[i] == true){
 		cout << "X" << i + 1;
@@ -41,23 +44,45 @@ for (int i = 0; i < k + n; i++){
 	}
 
 }
-cout << endl;
+
+cout << "</b></div>"<< endl;
 
 }
-void output_table(double ** table, int k, int n){
+void output_table(double ** table, int k, int n, string table_name){
+
+
 	//outputting names of columns
 	cout.precision(4);
+
+	cout << "<div class='container'>" <<
+		"<h4>" << table_name << "</h4>" <<
+		"<table class='table table-bordered'>" <<
+		" <thead>"
+		"<tr>";
+
 	for (int j = 0; j < k + n; j++) {
-		cout << "X" << j + 1 << "\t";
+		cout << "<th>X" << j + 1 << "</th>";
 	}
-	cout << "RS" << "\t" << "Q" << endl;
+
+	cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
+
+	cout << "\n</tr>"		<< "\n</thead>"
+		<< "<tbody>";
 
 	for (int i = 0; i < k + 1; i++) {
+		cout << "<tr>";
 		for (int j = 0; j < k + n + 2; j++) {
-			cout << table[i][j] << "\t";
+			cout  << "<td>" <<  table[i][j] << "</td>\n";
 		}
-		cout << endl;
+		cout << " </tr>";
 	}
+
+
+
+	cout <<
+		"</tbody>" <<
+		"</table>" <<
+		"</div>";
 
 
 }
@@ -72,6 +97,7 @@ bool hasPositiveValues(double **table, int number_of_columns, int number_of_rows
 }
 
 void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, double *vector_c){
+	cout << "<div class = 'well'>" << endl;
 	//n = iterator_matrix
 	//basis = basis_matrix
 	//k = iterator_vektor
@@ -347,7 +373,7 @@ if (!test){
 	}
 	cout << "]." << endl;
 }
-	
+	cout << "</div>" << endl;
 }
 
 
@@ -414,14 +440,32 @@ double* lpsolve(int n, double *c, int k, double **A, double *b){
 		}
 	}
 
-	
-	cout << "Ausgangstableau:" << endl;
+	//continuing with outputting restrictions
 
-	output_table(table, k, n);
+	cout << "Die Restriktionen: <b>";
+	for (int i = 0; i < k; i++) {//zeilen
+		cout << "<br>" ;
+		for (int j = 0; j < n + 1; j++) {//spalten
+			if (j < n - 1)
+				cout << "x" << i + 1 << "*" << table[i][j] << " + ";
+			if (j == n - 1)
+				cout << "x" << i + 1 << "*" << table[i][j];
+			if (j == n)
+				cout << " <= " << table[i][j + n];
+		}
+	}
+	cout << "</b>";
+	//close div of first well
+	cout << "</div>";
+
+
+
+
+	output_table(table, k, n, "Ausgangstableau:");
 
 	output_basic_vars(table, k, n);
 
-	cout << "RS steht für die \"rechte Seite\" des (urspruenglichen) Gleichungssystems." << endl;
+	//cout << "RS steht fuer die \"rechte Seite\" des (urspruenglichen) Gleichungssystems." << endl;
 	cout << endl;
 	//----BEGIN CALCULATION-----
 
@@ -454,13 +498,15 @@ do{
 				index_pivot_column = i;
 			}
 	}
-
-	cout << "Die groesste positive Zahl in der ZF-Spalte ist " << temp_highest << endl;
-	cout << "Spalte Nummer " << index_pivot_column+1 << " ist die Pivotspalte" << endl;
+	cout << "<div class = 'well'>" << endl;
+	cout << "Die groesste positive Zahl in der ZF-Spalte ist " << temp_highest << "<br>" << endl;
+	cout << "Spalte Nummer " << index_pivot_column + 1 << " ist die Pivotspalte" << "<br>" << endl;
 	cout << endl;
 	//calculate Quotient
 
-	cout << "Kalkuliere Quotient" << endl;
+	cout << "Kalkuliere Quotient" << "<br>" << endl;
+
+	cout << "</div>" << endl;
 
 	for (int i = 0; i < number_of_rows - 1; i++) {
 		if (table[i][index_pivot_column] != 0){
@@ -495,9 +541,10 @@ do{
 	}
 
 
-	cout << "Tableau nach Kalkulation (der kleinste Quotien ist mit >*< hervorgehoben):" << endl;
+	//cout << "Tableau nach Kalkulation (der kleinste Quotien ist mit >*< hervorgehoben):" << endl;
 
-
+	//old, before html
+	/*
 	for (int j = 0; j < k + n; j++) {
 		cout << "X" << j + 1 << "\t";
 	}
@@ -513,9 +560,62 @@ do{
 		}
 		cout << endl;
 	}
+	*/
+	//////////////////////////////////////////////////
+
+
+
+	//outputting names of columns
+	cout.precision(4);
+
+	cout << "<div class='container'>" <<
+		"<h4>" << "Tableau nach Kalkulation(der kleinste Quotient ist rot)" << "</h4>" <<
+		"<table class='table table-bordered'>" <<
+		" <thead>"
+		"<tr>";
+
+	for (int j = 0; j < k + n; j++) {
+		cout << "<th>X" << j + 1 << "</th>";
+	}
+
+	cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
+
+	cout << "\n</tr>"		<< "\n</thead>"
+		<< "<tbody>";
+
+	for (int i = 0; i < k + 1; i++) {
+		cout << "<tr>";
+		for (int j = 0; j < k + n + 2; j++) {
+			if (j == index_quotient_column && table[i][j] == temp_smallest)
+				cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+			else
+				cout << "<td>" << table[i][j] << "</td>\n";
+			
+		}
+		cout << " </tr>";
+	}
+
+
+
+	cout <<
+		"</tbody>" <<
+		"</table>" <<
+		"</div>";
+
+
+
+
+
+
+
+
+	////////////////////////////////////////////////////
+
+
+
 
 	cout << endl;
-
+	/*
 	cout << "Jetzt kann man das Pivotelement bestimmen. (ist mit >*< hervorgehoben)" << endl;
 
 	for (int j = 0; j < k + n; j++) {
@@ -533,13 +633,65 @@ do{
 		}
 		cout << endl;
 	}
+	*/
+	//////////////////////////////////////////////////
+
+
+
+	//outputting names of columns
+	cout.precision(4);
+
+	cout << "<div class='container'>" <<
+		"<h4>" << "Das Pivotelement. (ist rot)" << "</h4>" <<
+		"<table class='table table-bordered'>" <<
+		" <thead>"
+		"<tr>";
+
+	for (int j = 0; j < k + n; j++) {
+		cout << "<th>X" << j + 1 << "</th>";
+	}
+
+	cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
+
+	cout << "\n</tr>"		<< "\n</thead>"
+		<< "<tbody>";
+
+	for (int i = 0; i < k + 1; i++) {
+		cout << "<tr>";
+		for (int j = 0; j < k + n + 2; j++) {
+			if (index_pivot_row == i && index_pivot_column == j)
+				cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+			else
+				cout << "<td>" << table[i][j] << "</td>\n";
+
+		}
+		cout << " </tr>";
+	}
+
+
+
+	cout <<
+		"</tbody>" <<
+		"</table>" <<
+		"</div>";
+
+
+
+
+
+
+
+
+	////////////////////////////////////////////////////
+
+
 
 
 	cout << endl;
 	//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
-
+	cout << "<div class = 'well'>" << endl;
 	cout << "Dividiere alle Werte in der Pivotspalte " << index_pivot_row+1 << " durch das Pivotelement mit Wert " << table[index_pivot_row][index_pivot_column] << endl;
-
+	cout << "</div>" << endl;
 	double temp_dev = table[index_pivot_row][index_pivot_column];
 
 	for (int i = 0; i < number_of_columns - 1; i++) {
@@ -551,12 +703,12 @@ do{
 	}
 
 
-	output_table(table, k, n);
+	output_table(table, k, n, "Die Tabelle nach der Division");
 
 	cout << endl;
-
+	cout << "<div class = 'well'>" << endl;
 	cout << "Mit Hilfe vom Gaussschen Eliminationsverfahren alle Werte in der Pivotspalte zu 0 bringen (ausser das Privotelement)" << endl;
-
+	cout << "</div>" << endl;
 	for (int i = 0; i < number_of_rows; i++) {
 		if (i != index_pivot_row && table[i][index_pivot_column] != 0){
 			double temp_multiplyer = table[i][index_pivot_column];
@@ -567,17 +719,19 @@ do{
 
 	}
 
-	cout << "Das Tableu nachdem:" << endl;
 
-	output_table(table, k, n);
+
+	output_table(table, k, n, "Das Tableu nachdem:");
 
 	cout << endl;
 
 	//testing tabelle
-	cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
+	//cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
 	//cout.precision(4);
 
-	output_table(table, k, n);
+	string interation_first = "Die Tabelle nach der Iteration Nr. " + std::to_string(iteration_number);
+	iteration_number++;
+	output_table(table, k, n, interation_first);
 
 	output_basic_vars(table, k, n);
 
@@ -616,17 +770,23 @@ do{
 
 
 	//results
+	cout << "<div class = 'well'>" << endl;
 
-	cout << endl << "Eine optimale Loesung ist gefunden! Die Werte sind: " << endl;
+	cout << endl << "<h3 style='color:red;'>Eine optimale Loesung ist gefunden! </h3>   <h3> <b>" << endl;
 	for (int i = 0; i < n; i++) {
-		cout << "x" << i + 1 << " = " << results_first[i] << ", ";
+		if (i < n - 1)
+			cout << "x" << i + 1 << " = " << results_first[i] << ", ";
+		else
+			cout << "x" << i + 1 << " = " << results_first[i];
+
 	}
 	cout << endl << endl;
 	cout.precision(4);
-	cout << "Somit hat die Zielfunktion den Wert " << table[number_of_rows-1][index_rechte_seite_column] * (-1) << endl;
+	cout << "</b> </h3> <br> <h4> Somit liefert die Zielfunktion den Wert <b>" << table[number_of_rows-1][index_rechte_seite_column] * (-1) << "</b>" << endl;
 	
 }
 
+cout << "</h4></div>" << endl;
 	cout << endl;
 
 
@@ -670,12 +830,19 @@ do{
 		}
 	}
 	cout << endl;
-
-	if (index_column_another_solution == nullptr)
+	
+	if (index_column_another_solution == nullptr){
+		cout << "<div class = 'well'><h4>" << endl;
 		cout << "Dieses LP hat nur eine Loesung." << endl;
+		cout << "<h4></div>" << endl;
+	}
+		
 	else{
-		cout << "Dieses LP hat mehrere Loesungen!" << endl << 
-			"x" << *index_column_another_solution+1 << " kann Basisbariable werden, ohne den Zielfunktionswert zu benachteiligen" << endl;
+		cout << "<div class = 'well'>" << endl;
+		cout << "<h3 style='color:green;'>Dieses LP hat mehrere Loesungen!</h3>" << endl << 
+			"<h4><b>x" << *index_column_another_solution+1 << " </b> kann zu Basisbariable umgerechnet werden, ohne den Zielfunktionswert zu benachteiligen" << endl;
+		cout << "</h4></div>" << endl;
+		iteration_number = 1;
 
 		/////////////////////////////////////////////////////////
 		//calculate the coordinates of the new point
@@ -684,8 +851,10 @@ do{
 		//code from above START
 
 		//calculate Quotient
+		cout << "<div class = 'well'>" << endl;
+		cout << "Kalkuliere Quotient" << "<br>" << endl;
 
-		cout << "Kalkuliere Quotient" << endl;
+		cout << "</div>" << endl;
 
 		for (int i = 0; i < number_of_rows - 1; i++) {
 			if (table[i][*index_column_another_solution] != 0){
@@ -720,51 +889,157 @@ do{
 		}
 
 
-		cout << "Tableau nach Kalkulation (der kleinste Quotien ist mit >*< hervorgehoben):" << endl;
+		//cout << "Tableau nach Kalkulation (der kleinste Quotien ist mit >*< hervorgehoben):" << endl;
 
-
+		//old, before html
+		/*
 		for (int j = 0; j < k + n; j++) {
-			cout << "X" << j + 1 << "\t";
+		cout << "X" << j + 1 << "\t";
 		}
 		cout << "RS" << "\t" << "Q" << endl;
 
 		for (int i = 0; i < number_of_rows; i++) {
-			for (int j = 0; j < number_of_columns; j++) {
-				if (j == index_quotient_column && table[i][j] == temp_smallest)
-					cout << ">" << table[i][j] << "<" << "\t";
-				else
-					cout << table[i][j] << "\t";
+		for (int j = 0; j < number_of_columns; j++) {
+		if (j == index_quotient_column && table[i][j] == temp_smallest)
+		cout << ">" << table[i][j] << "<" << "\t";
+		else
+		cout << table[i][j] << "\t";
 
-			}
-			cout << endl;
+		}
+		cout << endl;
+		}
+		*/
+		//////////////////////////////////////////////////
+
+
+
+		//outputting names of columns
+		cout.precision(4);
+
+		cout << "<div class='container'>" <<
+			"<h4>" << "Tableau nach Kalkulation(der kleinste Quotient ist rot)" << "</h4>" <<
+			"<table class='table table-bordered'>" <<
+			" <thead>"
+			"<tr>";
+
+		for (int j = 0; j < k + n; j++) {
+			cout << "<th>X" << j + 1 << "</th>";
 		}
 
-		cout << endl;
+		cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
 
+		cout << "\n</tr>"			<< "\n</thead>"
+			<< "<tbody>";
+
+		for (int i = 0; i < k + 1; i++) {
+			cout << "<tr>";
+			for (int j = 0; j < k + n + 2; j++) {
+				if (j == index_quotient_column && table[i][j] == temp_smallest)
+					cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
+				else
+					cout << "<td>" << table[i][j] << "</td>\n";
+
+			}
+			cout << " </tr>";
+		}
+
+
+
+		cout <<
+			"</tbody>" <<
+			"</table>" <<
+			"</div>";
+
+
+
+
+
+
+
+
+		////////////////////////////////////////////////////
+
+
+
+
+		cout << endl;
+		/*
 		cout << "Jetzt kann man das Pivotelement bestimmen. (ist mit >*< hervorgehoben)" << endl;
 
 		for (int j = 0; j < k + n; j++) {
-			cout << "X" << j + 1 << "\t";
+		cout << "X" << j + 1 << "\t";
 		}
 		cout << "RS" << "\t" << "Q" << endl;
 
 		for (int i = 0; i < number_of_rows; i++) {
-			for (int j = 0; j < number_of_columns; j++) {
+		for (int j = 0; j < number_of_columns; j++) {
+		if (index_pivot_row == i && index_pivot_column == j)
+		cout << ">" << table[i][j] << "<" << "\t";
+		else
+		cout << table[i][j] << "\t";
+
+		}
+		cout << endl;
+		}
+		*/
+		//////////////////////////////////////////////////
+
+
+
+		//outputting names of columns
+		cout.precision(4);
+
+		cout << "<div class='container'>" <<
+			"<h4>" << "Das Pivotelement. (ist rot)" << "</h4>" <<
+			"<table class='table table-bordered'>" <<
+			" <thead>"
+			"<tr>";
+
+		for (int j = 0; j < k + n; j++) {
+			cout << "<th>X" << j + 1 << "</th>";
+		}
+
+		cout << "<th>Rechte Seite</th>" << "\n" << "<th>Quotient</th>" << endl;
+
+		cout << "\n</tr>"			<< "\n</thead>"
+			<< "<tbody>";
+
+		for (int i = 0; i < k + 1; i++) {
+			cout << "<tr>";
+			for (int j = 0; j < k + n + 2; j++) {
 				if (index_pivot_row == i && *index_column_another_solution == j)
-					cout << ">" << table[i][j] << "<" << "\t";
+					cout << "<td><font color='red'>" << table[i][j] << "</font></td>\n";
 				else
-					cout << table[i][j] << "\t";
+					cout << "<td>" << table[i][j] << "</td>\n";
 
 			}
-			cout << endl;
+			cout << " </tr>";
 		}
+
+
+
+		cout <<
+			"</tbody>" <<
+			"</table>" <<
+			"</div>";
+
+
+
+
+
+
+
+
+		////////////////////////////////////////////////////
+
+
 
 
 		cout << endl;
 		//converting the value of the pivot element to 1 by deviding each element in the pivot row by pivot element
-
+		cout << "<div class = 'well'>" << endl;
 		cout << "Dividiere alle Werte in der Pivotspalte " << index_pivot_row + 1 << " durch das Pivotelement mit Wert " << table[index_pivot_row][*index_column_another_solution] << endl;
-
+		cout << "</div>" << endl;
 		double temp_dev = table[index_pivot_row][*index_column_another_solution];
 
 		for (int i = 0; i < number_of_columns - 1; i++) {
@@ -776,12 +1051,12 @@ do{
 		}
 
 
-		output_table(table, k, n);
+		output_table(table, k, n, "Die Tabelle nach der Division");
 
 		cout << endl;
-
+		cout << "<div class = 'well'>" << endl;
 		cout << "Mit Hilfe vom Gaussschen Eliminationsverfahren alle Werte in der Pivotspalte zu 0 bringen (ausser das Privotelement)" << endl;
-
+		cout << "</div>" << endl;
 		for (int i = 0; i < number_of_rows; i++) {
 			if (i != index_pivot_row && table[i][*index_column_another_solution] != 0){
 				double temp_multiplyer = table[i][*index_column_another_solution];
@@ -792,17 +1067,17 @@ do{
 
 		}
 
-		cout << "Das Tableu nachdem:" << endl;
 
-		output_table(table, k, n);
+
+		output_table(table, k, n, "Das Tableu nachdem:");
 
 		cout << endl;
 
 		//testing tabelle
-		cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
+		//cout << "Interation Nummer " << iteration_number++ << " is abgeschlossen. Zeige das Tableau" << endl;
 		//cout.precision(4);
 
-		output_table(table, k, n);
+		output_table(table, k, n, "Die Tabelle nach der Iteration");
 
 		output_basic_vars(table, k, n);
 
@@ -838,9 +1113,8 @@ do{
 			else
 				results_counter++;
 		}
-
-
-		cout << endl << "Die zweite optimale Loesung ist gefunden! Folgender Ausdruck zeigt alle moeglichen Loesungen: " << endl;
+		cout << "<div class = 'well'>" << endl;
+		cout << endl << "<h3 style='color:red;'> Die zweite optimale Loesung ist gefunden! </h3> <h3> Folgender Ausdruck zeigt alle moeglichen Loesungen: <br> <b>" << endl;
 
 		cout << "(";
 
@@ -869,9 +1143,9 @@ do{
 		
 
 		cout << endl;
-		cout << "Die Zielfunktion wird immer den Wert " << table[number_of_rows - 1][index_rechte_seite_column] * (-1) << " ermitteln." << endl;
+		cout << "</b> <br> <br> Die Zielfunktion wird immer den Wert " << table[number_of_rows - 1][index_rechte_seite_column] * (-1) << " zurueckliefern.</h3>" << endl;
 
-
+		cout << "</div>" << endl;
 
 	}
 
@@ -886,32 +1160,67 @@ do{
 
 int main(int argc, char* argv[]){
 
+	cout << "<!DOCTYPE html>\n"
+		<< "<html lang='de'>\n"
+		<< "<head>\n"
+		<< "<title>Bootstrap Example</title>\n"
+		<< "<meta charset='utf-8'>\n"
+		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
+		<< "<link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>\n"
+		<< "<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>\n"
+		<< "<script src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>\n"
+		<< "</head>\n"
+		<< "<body>\n"
+
+		<< "<div class='container'>\n" ;
+
+
+
+
+
 
 	
 	if (argc < 2){
-		cout << "Man muss eine *.txt Datei als erster Parameter uebergeben!" << endl;
+		cout << "<p><div class = 'alert alert-danger' role = 'alert'>Man muss eine *.txt Datei als erster Parameter uebergeben!</p>"<< endl;
+
+		cout << "</div>";
+
+		cout << "</body>\n";
+		cout << "</html>\n";
+
 		return 1;
 	}
 
 	ifstream file(argv[1]);
 	if (!file.good()) {
-		cout << "Etwas stimmt mit der Datei nicht!" << endl;
+		cout << "<p><div class = 'alert alert-danger' role = 'alert'>Etwas stimmt mit der Datei nicht!</p>" << endl;
+
+		cout << "</div>";
+
+		cout << "</body>\n";
+		cout << "</html>\n";
+
 		return 1;
 	}
 
 	std::string file_str = argv[1];
 	if (file_str.find(".txt") != std::string::npos) {
-		cout << "Die datei gefunden!" << endl;
+		cout << "<p><div class = 'alert alert-success' role = 'alert'>Die datei gefunden!</p>" << endl;
 	}
 	else{
-		cout << "Das soll eine txt Datei sein!" << endl;
+		cout << "<p><div class = 'alert alert-danger' role = 'alert'>Das soll eine txt Datei sein!</p>" << endl;
+
+		cout << "</div>";
+
+		cout << "</body>\n";
+		cout << "</html>\n";
+
 		return 1;
 	}
-
 	show_log = false;
 	//bool min_active = false;
 	for (int i = 1; i < argc; i++){
-		cout << argv[i] << endl;
+		if (show_log) cout << argv[i] << endl;
 		std::string arg_str = argv[i];
 		std::string log_str = "show_log";
 		if (arg_str == log_str) {
@@ -951,9 +1260,18 @@ int main(int argc, char* argv[]){
 	}
 	*/
 
+
+	cout << "</div>";
+
+	cout << "<div class = 'well'>" << endl;
+
 	int n, k; // n Zeilen, k Spalten
 	file >> n >> k;
 	if (show_log) cout << "n: " << n << ", k: " << k << endl;
+
+	cout << "<p>Vorgegeben sind <b>" << n << "</b> Variablen mit <b>" << k << "</b> Restriktionen</p>" << endl;
+
+
 
 	double *vector_c = new double[n];
 	for (int i = 0; i < n; i++) {
@@ -975,6 +1293,18 @@ int main(int argc, char* argv[]){
 			cout << vector_c[i] << endl;
 		}
 	}
+
+	cout << "<p>Die Zielfunktion:" << endl
+		<< "<br><b>";
+		for (int i = 0; i < n; i++) {
+			if (i != n - 1)
+				cout << "x" << i + 1 << "*" << vector_c[i] << " + ";
+			else
+				cout << "x" << i + 1 << "*" << vector_c[i];
+		}
+		cout << "</b></p>";
+
+
 
 	
 
@@ -1013,23 +1343,44 @@ int main(int argc, char* argv[]){
 
 	for (int i = 0; i < k; i++) {
 		if (vector_b[i] < 0){
-			cout << "Die Ungleichungen können keine negativen Zahlen auf der rechten Seite haben" << endl;
+
+			cout << "<p><div class = 'alert alert-danger' role = 'alert'>Es gilt Nichtnegativitätsbedingung, deswegen dürfen sich auf der rechten Sei der Ungleichungen mit keine negativen Zahlen vorkommen!</p>" << endl;
+
+			cout << "</div>";
+
+			cout << "</body>\n";
+			cout << "</html>\n";
+
 			return 1;
 		}
 	}
+
+
+	//cout << "</div>";
 
 	//results
 
 	double* results = lpsolve(n, vector_c, k, matrix, vector_b);
 
+	/*
 	cout << endl << "Die optimale Loesung ist: " << endl;
 	for (int i = 0; i < n; i++) {
 		cout << "x" << i+1 << " = " << results[i] << ", ";
 	}
 	cout << endl << endl;
+	*/
 
-	system("pause");
+	//system("pause");
 
+
+
+
+
+
+
+
+	cout << "</div> </body>\n";
+	cout << "</html>\n";
 
 	return 0;
 }
