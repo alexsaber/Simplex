@@ -168,7 +168,7 @@ void sensAnalysis(int n, int k,double **basis_matrix, double **optimal_matrix, d
 	for (int i = 0; i < n+k; i++){
 		//cout << "a" << i << " = [ ";
 		for (int j = 0; j < k; j++){
-			//a[j][i] = basis_matrix[j][i];
+			a[j][i] = basis_matrix[j][i];
 			//cout << a[j][i] << " ";
 		}
 		//cout << "]" << endl;
